@@ -1,34 +1,108 @@
-# VideoGen AI | AI Powered Video Generation with Voice Over  
-AI Video Generator using Google Gemini and Manim
+# VideoGen AI - AI-Powered Video Generation with Voice Over
 
-VideoGen AI is a web app that turns text prompts into fully generated educational videos.  
-It uses Google Gemini to create Manim animation code and ElevenLabs to generate natural voice over, then combines everything into a single ready to watch video.
-
-Perfect for math explainers, concept breakdowns, and auto generated learning content.
-
----
+VideoGen AI is a web application that generates animated videos from text descriptions using AI. It combines Google's Gemini AI for creating Manim animations with ElevenLabs text-to-speech for voice over narration, creating fully automated video content.
 
 ## ✨ Features
 
-* **AI video from plain text**  
-  Type what you want explained and let the system design the animation and script.
+- **AI-Powered Video Generation**: Describe your video in plain English and let AI create it
+- **Voice Over Integration**: Automatic text-to-speech narration using ElevenLabs
+- **Manim Animations**: Professional mathematical animations powered by Manim
+- **Web Interface**: Clean, YouTube-style interface for creating and viewing videos
+- **Video Gallery**: Browse and play all generated videos
+- **REST API**: Programmatic access to video generation capabilities
 
-* **Automatic voice over**  
-  ElevenLabs text to speech is used to create clear and natural narration.
+## 🚀 Demo
 
-* **Manim powered animations**  
-  High quality math and concept visualizations rendered with Manim.
+![VideoGen AI Interface](https://via.placeholder.com/800x400/FF0000/FFFFFF?text=VideoGen+AI+Demo)
 
-* **Simple web interface**  
-  YouTube style layout for creating, browsing, and watching generated videos.
+## 📋 Prerequisites
 
-* **Video gallery**  
-  All generated videos are listed with easy playback and download.
+Before running this application, make sure you have the following installed:
 
-* **REST API**  
-  Trigger video generation and retrieve videos from your own apps.
+- **Python 3.8+**
+- **FFmpeg** (for audio/video processing)
+- **Google Gemini API Key**
+- **ElevenLabs API Key**
 
----
+### Installing FFmpeg
+
+**macOS (using Homebrew):**
+```bash
+brew install ffmpeg
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install ffmpeg
+```
+
+**Windows:**
+Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH.
+
+## 🛠️ Installation
+
+1. **Clone the repository:**
+```bash
+git clone <your-repo-url>
+cd videogen-ai
+```
+
+2. **Create a virtual environment:**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+4. **Configure API Keys:**
+
+Edit `utils.py` and update the API keys:
+
+```python
+# Set up Gemini API
+genai.configure(api_key="YOUR_GEMINI_API_KEY")
+
+# Set up ElevenLabs API
+elevenlabs = ElevenLabs(api_key="YOUR_ELEVENLABS_API_KEY")
+```
+
+## ⚙️ Configuration
+
+### API Keys Setup
+
+1. **Google Gemini API:**
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create a new API key
+   - Replace `YOUR_GEMINI_API_KEY` in `utils.py`
+
+2. **ElevenLabs API:**
+   - Visit [ElevenLabs](https://elevenlabs.io/app/profile)
+   - Sign up and get your API key
+   - Replace `YOUR_ELEVENLABS_API_KEY` in `utils.py`
+
+### Voice Configuration
+
+The app uses the following ElevenLabs voice settings:
+- **Voice ID**: `JBFqnCBsd6RMkjVDRZzb` (English voice)
+- **Model**: `eleven_multilingual_v2`
+- **Format**: MP3 44.1kHz 128kbps
+
+## 🚀 Running the Application
+
+1. **Start the Flask server:**
+```bash
+python app.py
+```
+
+2. **Open your browser:**
+Navigate to `http://127.0.0.1:5000`
+
+## 📖 Usage
 
 ## 🚀 Demo
 ## 🖼️ Screenshots
@@ -40,150 +114,44 @@ Perfect for math explainers, concept breakdowns, and auto generated learning con
 ![UI 3](https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/Screenshot%202025-11-28%20at%209.54.58%E2%80%AFPM.png?alt=media&token=4ed487bf-6649-4a14-8c05-cf826eb1da31)
 ---
 
-## 🎞️ Demo Video
+### Web Interface
 
-<video width="800" controls>
-  <source src="https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/IntroShapes.mp4?alt=media&token=a6f6ec53-3cf9-48c4-8676-38986092289d" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+1. **Video Creator Tab:**
+   - Enter a math topic to explain (e.g., "rotational motion", "quadratic equations", "Pythagorean theorem")
+   - Select the explanation level: Basic, Intermediate, or Special Topic
+   - Click "Generate Video"
+   - Wait for AI to create educational animation, voice over, and subtitles
+   - The video will automatically appear in the gallery
 
----
-## 📋 Prerequisites
+2. **Video Gallery Tab:**
+   - Browse all generated math videos with level indicators
+   - Click on any video to play it with synchronized subtitles
+   - Use the download button to save videos locally
+   - Videos include educational animations, voice over, and auto-generated subtitles
 
-Make sure you have:
+### API Usage
 
-* Python 3.8 or newer  
-* FFmpeg installed and in your PATH  
-* Google Gemini API key  
-* ElevenLabs API key  
-
-### Install FFmpeg
-
-**macOS with Homebrew**
+#### Generate Video
 ```bash
-brew install ffmpeg
-
-Ubuntu or Debian
-
-sudo apt update
-sudo apt install ffmpeg
-
-Windows
-
-Download FFmpeg from the official site and add it to your PATH:
-https://ffmpeg.org/download.html
-
-⸻
-
-🛠️ Installation
-	1.	Clone the repository
-
-git clone <your repo url>
-cd videogen_ai
-
-
-	2.	Create and activate a virtual environment
-
-python -m venv venv
-source venv/bin/activate      # On Windows: venv\Scripts\activate
-
-
-	3.	Install dependencies
-
-pip install -r requirements.txt
-
-
-	4.	Configure API keys
-Edit utils.py and set your keys:
-
-# Gemini setup
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
-
-# ElevenLabs setup
-elevenlabs = ElevenLabs(api_key="YOUR_ELEVENLABS_API_KEY")
-
-
-
-⸻
-
-⚙️ Configuration
-
-Google Gemini API
-	1.	Go to Google AI Studio
-https://makersuite.google.com/app/apikey
-	2.	Create an API key
-	3.	Paste it into utils.py in place of YOUR_GEMINI_API_KEY
-
-ElevenLabs API
-	1.	Go to ElevenLabs profile page
-https://elevenlabs.io/app/profile
-	2.	Create or copy your API key
-	3.	Paste it into utils.py in place of YOUR_ELEVENLABS_API_KEY
-
-Voice settings in ElevenLabs
-	•	Voice ID: JBFqnCBsd6RMkjVDRZzb
-	•	Model: eleven_multilingual_v2
-	•	Output: MP3, 44.1 kHz, 128 kbps
-
-You can customize these in the code if you prefer other voices.
-
-⸻
-
-🚀 Running the app
-	1.	Start the Flask server:
-
-python app.py
-
-
-	2.	Open your browser and visit:
-
-http://127.0.0.1:5000
-
-
-
-⸻
-
-📖 Usage
-
-Web interface
-
-Video Creator tab
-	1.	Enter a topic you want explained
-Examples:
-	•	rotational motion
-	•	quadratic equations
-	•	Pythagorean theorem
-	2.	Choose the detail level: Basic, Intermediate, or Special topic
-	3.	Click Generate Video
-	4.	Wait while Gemini, Manim, ElevenLabs, and FFmpeg do the work
-	5.	Your new video will appear in the gallery when done
-
-Video Gallery tab
-	•	Browse all generated videos
-	•	Each entry shows the title and level
-	•	Click a video to play it with voice and subtitles
-	•	Use the download button to save the file locally
-
-API usage
-
-Generate a video
-
 curl -X POST http://127.0.0.1:5000/generate \
   -H "Content-Type: application/json" \
   -d '{"text": "Your video description here"}'
+```
 
-Response:
-
+**Response:**
+```json
 {
   "video_url": "/videos/GeneratedScene.mp4"
 }
+```
 
-Get list of videos
-
+#### Get Video List
+```bash
 curl http://127.0.0.1:5000/videos
+```
 
-Response:
-
+**Response:**
+```json
 [
   {
     "title": "Your video description...",
@@ -191,111 +159,85 @@ Response:
     "filename": "GeneratedScene.mp4"
   }
 ]
+```
 
+## 🏗️ Project Structure
 
-⸻
+```
+videogen-ai/
+├── app.py                 # Main Flask application
+├── utils.py              # AI integration and video processing
+├── requirements.txt      # Python dependencies
+├── videos.json          # Video metadata storage
+├── templates/
+│   └── index.html       # Web interface
+├── media/
+│   ├── videos/          # Generated video files
+│   └── images/          # Manim temporary files
+└── README.md            # This file
+```
 
-🏗️ Project structure
+## 🔧 How It Works
 
-Main files and folders:
-	•	app.py
-Flask app entry point
-	•	utils.py
-Gemini and ElevenLabs integration plus video pipeline helpers
-	•	requirements.txt
-Python package list
-	•	videos.json
-Stored metadata for generated videos
-	•	templates/index.html
-Front end template
-	•	media/videos
-Final rendered video files
-	•	media/images
-Temporary Manim output and frames
+1. **Text Input**: User provides a video description
+2. **AI Code Generation**: Gemini AI creates Manim Python code based on the description
+3. **Video Rendering**: Manim renders the animation to MP4
+4. **Voice Over**: ElevenLabs generates speech audio from the same text
+5. **Audio-Video Sync**: FFmpeg combines video and audio into final output
+6. **Storage**: Video is saved and metadata stored for gallery access
 
-⸻
+## 🎯 Example Videos
 
-🔧 How it works
-	1.	User input
-You provide a plain text description of the content you want.
-	2.	Gemini content and code generation
-Gemini creates both explanation content and Manim Python code for the animation.
-	3.	Manim rendering
-Manim renders the animation to an MP4 video.
-	4.	Voice over generation
-ElevenLabs converts the explanation text into speech audio.
-	5.	Audio and video merge
-FFmpeg combines the animation and audio track into the final video.
-	6.	Storage and gallery
-The resulting video is stored on disk and listed in the gallery through videos.json.
+Try these prompts:
 
-⸻
+- "A blue circle that grows and shrinks with text 'Welcome' appearing"
+- "Mathematical equation e=mc² with animated derivation"
+- "Colorful geometric shapes dancing to music"
+- "Step-by-step explanation of photosynthesis with diagrams"
 
-🎯 Example prompts
+## 🐛 Troubleshooting
 
-Try prompts like:
-	•	A blue circle that grows and shrinks while the word Welcome appears
-	•	Animated explanation of the equation e = mc²
-	•	Colorful geometric shapes moving in patterns
-	•	Step by step explanation of photosynthesis with simple diagrams
-	•	Introduction to Newton third law with force pair examples
+### Common Issues
 
-⸻
+**"Failed to generate audio"**
+- Check your ElevenLabs API key is valid
+- Ensure you have credits in your ElevenLabs account
 
-🐛 Troubleshooting
+**"Failed to render video"**
+- Verify Manim is installed correctly
+- Check that FFmpeg is available in PATH
 
-Failed to generate audio
-	•	Check that your ElevenLabs API key is correct
-	•	Confirm you have enough credits in your ElevenLabs account
+**"No text provided"**
+- Ensure you're sending JSON with a "text" field in POST requests
 
-Failed to render video
-	•	Ensure Manim is installed and callable from your environment
-	•	Confirm FFmpeg is installed and in your PATH
+### Logs
 
-No text provided
-	•	For API calls make sure the JSON body includes a "text" field
+Check Flask console output for detailed error messages and processing status.
 
-Where to check logs
-	•	Look at the Flask server console output
-	•	Errors from Manim, FFmpeg, or the APIs are printed there
+## 🤝 Contributing
 
-⸻
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and test thoroughly
+4. Commit: `git commit -am 'Add new feature'`
+5. Push: `git push origin feature-name`
+6. Submit a Pull Request
 
-🤝 Contributing
+## 📄 License
 
-Contributions are welcome.
-	1.	Fork the repo
-	2.	Create a feature branch
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-git checkout -b feature-name
+## 🙏 Acknowledgments
 
+- [Manim Community](https://www.manim.community/) - Mathematical animation engine
+- [Google Gemini AI](https://ai.google.dev/) - Code generation
+- [ElevenLabs](https://elevenlabs.io/) - Text-to-speech
+- [Flask](https://flask.palletsprojects.com/) - Web framework
 
-	3.	Make and test your changes
-	4.	Commit your work
+## 📞 Support
 
-git commit -am "Add new feature"
+If you encounter issues or have questions:
 
-
-	5.	Push to your fork
-
-git push origin feature-name
-
-
-	6.	Open a pull request
-
-⸻
-
-📄 License
-
-This project is released under the MIT License.
-See the LICENSE file for full details.
-
-⸻
-
-🙏 Acknowledgments
-	•	Manim Community for the animation engine
-	•	Google Gemini AI for content and code generation
-	•	ElevenLabs for high quality text to speech
-	•	Flask for the web framework
-
-
+1. Check the troubleshooting section above
+2. Open an issue on GitHub
+3. Ensure all prerequisites are met
