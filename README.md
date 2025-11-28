@@ -11,10 +11,6 @@ VideoGen AI is a web application that generates animated videos from text descri
 - **Video Gallery**: Browse and play all generated videos
 - **REST API**: Programmatic access to video generation capabilities
 
-## 🚀 Demo
-
-![VideoGen AI Interface](https://via.placeholder.com/800x400/FF0000/FFFFFF?text=VideoGen+AI+Demo)
-
 ## 📋 Prerequisites
 
 Before running this application, make sure you have the following installed:
