@@ -40,6 +40,14 @@ Perfect for math explainers, concept breakdowns, and auto generated learning con
 ![UI 3](https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/Screenshot%202025-11-28%20at%209.54.58%E2%80%AFPM.png?alt=media&token=4ed487bf-6649-4a14-8c05-cf826eb1da31)
 ---
 
+## 🎞️ Demo Video
+
+<video width="800" controls>
+  <source src="https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/IntroShapes.mp4?alt=media&token=a6f6ec53-3cf9-48c4-8676-38986092289d" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+---
 ## 📋 Prerequisites
 
 Make sure you have:
