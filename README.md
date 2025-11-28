@@ -31,9 +31,13 @@ Perfect for math explainers, concept breakdowns, and auto generated learning con
 ---
 
 ## 🚀 Demo
+## 🖼️ Screenshots
 
-![VideoGen AI Interface](https://via.placeholder.com/800x400/FF0000/FFFFFF?text=VideoGen+AI+Demo)
+![UI 1](https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/Screenshot%202025-11-28%20at%209.54.50%E2%80%AFPM.png?alt=media&token=8f4f3537-83f3-45f3-bb34-8db217e0a193)
 
+![UI 2](https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/Screenshot%202025-11-28%20at%209.54.55%E2%80%AFPM.png?alt=media&token=1f405581-f806-4a3f-9c98-0e70d4e74ecc)
+
+![UI 3](https://firebasestorage.googleapis.com/v0/b/apilage-ai.firebasestorage.app/o/Screenshot%202025-11-28%20at%209.54.58%E2%80%AFPM.png?alt=media&token=4ed487bf-6649-4a14-8c05-cf826eb1da31)
 ---
 
 ## 📋 Prerequisites
