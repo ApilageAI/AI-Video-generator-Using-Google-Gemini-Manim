@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoGen AI - YouTube Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff0000;
+        }
+
+        .tabs {
+            list-style: none;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .tab:hover {
+            background-color: #f0f0f0;
+        }
+
+        .tab.active {
+            background-color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .tab-icon {
+            width: 24px;
+            height: 24px;
+            opacity: 0.7;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #1a73e8;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Video Creator Tab */
+        .creator-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .creator-card {
+            background-color: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .creator-title {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+
+        .level-select {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .level-select:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+
+        .generate-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .generate-btn:hover {
+            background-color: #cc0000;
+        }
+
+        .generate-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .error {
+            color: #ff0000;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ffeaea;
+            border-radius: 8px;
+        }
+
+        /* Video Gallery Tab */
+        .gallery-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-header {
+            margin-bottom: 24px;
+        }
+
+        .gallery-title {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .video-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .video-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .play-button:hover {
+            opacity: 1;
+        }
+
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 15px solid #ff0000;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            margin-left: 3px;
+        }
+
+        .video-info {
+            padding: 16px;
+        }
+
+        .video-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Video Player Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        .video-modal-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .video-player-section {
+            flex: 2;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            max-height: 100vh;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .download-btn {
+            position: absolute;
+            top: 20px;
+            right: 80px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1001;
+        }
+
+        .download-btn:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .subtitles-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            max-width: 80%;
+            z-index: 1001;
+        }
+
+        .related-videos-section {
+            flex: 1;
+            background-color: #ffffff;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .related-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .related-video-card {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .related-video-card:hover {
+            background-color: #f0f0f0;
+        }
+
+        .related-thumbnail {
+            width: 120px;
+            height: 68px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .related-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .related-info {
+            flex: 1;
+        }
+
+        .related-video-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-video-meta {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+            }
+
+            .video-modal-content {
+                flex-direction: column;
+            }
+
+            .video-player-section {
+                flex: none;
+                height: 60vh;
+            }
+
+            .related-videos-section {
+                flex: none;
+                height: 40vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .search-bar {
+                max-width: none;
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-modal-content {
+                flex-direction: column;
+            }
+
+            .video-player-section {
+                height: 50vh;
+            }
+
+            .related-videos-section {
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">VideoGen AI</div>
+            </div>
+            <ul class="tabs">
+                <li class="tab active" data-tab="creator">
+                    <svg class="tab-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    Video Creator
+                </li>
+                <li class="tab" data-tab="gallery">
+                    <svg class="tab-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/>
+                    </svg>
+                    Video Gallery
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-content">
+                    <div class="search-bar">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search videos...">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- Video Creator Tab -->
+                <div id="creator-tab" class="tab-content active">
+                    <div class="creator-section">
+                        <div class="creator-card">
+                            <h1 class="creator-title">Create Your Video</h1>
+                            <div class="input-group">
+                                <label for="text-input">Describe Your Video</label>
+                                <textarea id="text-input" placeholder="e.g., A bouncing ball with colorful text saying 'Hello World' that fades in and out"></textarea>
+                            </div>
+                            <div class="input-group">
+                                <label for="level-select">Difficulty Level</label>
+                                <select id="level-select" class="level-select">
+                                    <option value="basic">Basic</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="special_topic">Special Topic</option>
+                                </select>
+                            </div>
+                            <button id="generate-btn" class="generate-btn" onclick="generateVideo()">Generate Video</button>
+                            <div id="loading" class="loading">
+                                <p>Generating your video... This may take a few minutes.</p>
+                            </div>
+                            <div id="error-message" class="error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Gallery Tab -->
+                <div id="gallery-tab" class="tab-content">
+                    <div class="gallery-section">
+                        <div class="gallery-header">
+                            <h1 class="gallery-title">Video Gallery</h1>
+                        </div>
+                        <div id="videos-grid" class="videos-grid">
+                            <!-- Videos will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="video-modal">
+        <div class="video-modal-content">
+            <div class="video-player-section">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <video id="modal-video" class="video-player" controls></video>
+            </div>
+            <div class="related-videos-section">
+                <h3 class="related-title">Up Next</h3>
+                <div id="related-videos">
+                    <!-- Related videos will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let videos = [];
+        let currentVideoIndex = -1;
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Show corresponding content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabName + '-tab').classList.add('active');
+
+                // Load videos if gallery tab is selected
+                if (tabName === 'gallery') {
+                    loadVideos();
+                }
+            });
+        });
+
+        async function loadVideos() {
+            try {
+                const response = await fetch('/videos');
+                if (response.ok) {
+                    videos = await response.json();
+                    displayVideos();
+                }
+            } catch (error) {
+                console.error('Error loading videos:', error);
+            }
+        }
+
+        function displayVideos(searchTerm = '') {
+            const videosGrid = document.getElementById('videos-grid');
+            videosGrid.innerHTML = '';
+
+            const filteredVideos = videos.filter(video =>
+                video.title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            filteredVideos.forEach((video, index) => {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.onclick = () => openModal(index);
+
+                videoCard.innerHTML = `
+                    <div class="video-thumbnail">
+                        <video muted preload="metadata">
+                            <source src="${video.url}" type="video/mp4">
+                        </video>
+                        <div class="play-button">
+                            <div class="play-icon"></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="video-meta">Generated Video</div>
+                    </div>
+                `;
+
+                videosGrid.appendChild(videoCard);
+            });
+        }
+
+        function openModal(videoIndex) {
+            currentVideoIndex = videoIndex;
+            const modal = document.getElementById('video-modal');
+            const modalVideo = document.getElementById('modal-video');
+
+            modalVideo.src = videos[videoIndex].url;
+            modal.style.display = 'flex';
+
+            displayRelatedVideos();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('video-modal');
+            const modalVideo = document.getElementById('modal-video');
+            const subtitlesContainer = document.getElementById('subtitles-container');
+
+            modal.style.display = 'none';
+            modalVideo.pause();
+            modalVideo.src = '';
+            modalVideo.ontimeupdate = null;
+            subtitlesContainer.style.display = 'none';
+            currentVideoIndex = -1;
+        }
+
+        function displayRelatedVideos() {
+            const relatedVideosContainer = document.getElementById('related-videos');
+            relatedVideosContainer.innerHTML = '';
+
+            videos.forEach((video, index) => {
+                if (index !== currentVideoIndex) {
+                    const relatedCard = document.createElement('div');
+                    relatedCard.className = 'related-video-card';
+                    relatedCard.onclick = () => {
+                        currentVideoIndex = index;
+                        const modalVideo = document.getElementById('modal-video');
+                        modalVideo.src = videos[index].url;
+                        displayRelatedVideos();
+                    };
+
+                    relatedCard.innerHTML = `
+                        <div class="related-thumbnail">
+                            <video muted preload="metadata">
+                                <source src="${video.url}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="related-info">
+                            <div class="related-video-title">${video.title}</div>
+                            <div class="related-video-meta">Generated Video</div>
+                        </div>
+                    `;
+
+                    relatedVideosContainer.appendChild(relatedCard);
+                }
+            });
+        }
+
+        async function generateVideo() {
+            const textInput = document.getElementById('text-input').value.trim();
+            const levelSelect = document.getElementById('level-select').value;
+            const generateBtn = document.getElementById('generate-btn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+
+            if (!textInput) {
+                alert('Please enter a math topic to explain.');
+                return;
+            }
+
+            // Disable button and show loading
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            loading.style.display = 'block';
+            errorMessage.textContent = '';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: textInput, level: levelSelect }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Add new video to the list
+                    videos.unshift({
+                        title: `${textInput} (${levelSelect.charAt(0).toUpperCase() + levelSelect.slice(1)})`.substring(0, 50) + (`${textInput} (${levelSelect})`.length > 50 ? '...' : ''),
+                        url: data.video_url,
+                        filename: data.video_url.split('/').pop(),
+                        level: levelSelect,
+                        subtitles: data.subtitles
+                    });
+
+                    // Clear input
+                    document.getElementById('text-input').value = '';
+
+                    // Switch to gallery tab and refresh
+                    document.querySelector('[data-tab="gallery"]').click();
+                } else {
+                    errorMessage.textContent = data.error || 'An error occurred while generating the video.';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Failed to generate video. Please try again.';
+                console.error('Error:', error);
+            } finally {
+                // Re-enable button and hide loading
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Video';
+                loading.style.display = 'none';
+            }
+        }
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            displayVideos(e.target.value);
+        });
+
+        // Load videos on page load
+        window.onload = () => {
+            // Load videos for gallery tab
+            loadVideos();
+        };
+
+        // Close modal when clicking outside
+        document.getElementById('video-modal').addEventListener('click', (event) => {
+            if (event.target === document.getElementById('video-modal')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

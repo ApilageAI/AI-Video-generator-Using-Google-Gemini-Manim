@@ -1,0 +1,13 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/1185818338_2234688533_223132457.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_1839128356_4107833759.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_2185992949_417307633.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_2430154707_1666280314.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_235577766_745560023.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_2408024828_1235811504.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_901412027_554207670.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_2408024828_907316687.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_3881830510_4245239885.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_790544715_3282659717.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_1839128356_1110172736.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpjxn_q5sm/480p15/partial_movie_files/IntroductionToShapes/624642324_1204105180_583677719.mp4'

@@ -1,0 +1,8 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/1185818338_1478999656_3774380165.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/624642324_1839128356_4093809679.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/624642324_2145756687_4202660299.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/624642324_1839128356_3855700464.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/624642324_1291486027_2927314835.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/624642324_2408024828_2181662127.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmp14fue6ov/480p15/partial_movie_files/WelcomeToSriLanka/624642324_2291503423_3689784366.mp4'

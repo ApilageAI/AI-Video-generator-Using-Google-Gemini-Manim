@@ -1,0 +1,10 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/1185818338_1034464386_223132457.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_859411214_3683040838.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_1839128356_2916402005.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_1004581473_4276479915.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_1839128356_604663822.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_2031692141_158459868.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_2695500310_691969773.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_2408024828_160459268.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpcbjrryc3/480p15/partial_movie_files/GeneratedScene/624642324_3058824668_3358373414.mp4'

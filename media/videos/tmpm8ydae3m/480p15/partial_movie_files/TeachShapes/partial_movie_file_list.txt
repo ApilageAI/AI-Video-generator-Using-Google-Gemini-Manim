@@ -1,0 +1,12 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/1185818338_486836632_223132457.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_2408024828_1882721990.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_3418396277_1969726908.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_1556744121_1666280314.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_1859738820_343155041.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_1734327179_3120175768.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_2247176319_3440605567.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_2326946661_691969773.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_4267833521_4202218423.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_1734327179_2531840375.mp4'
+file 'file:/Users/dinethgunawardana/Desktop/manim/media/videos/tmpm8ydae3m/480p15/partial_movie_files/TeachShapes/624642324_2044364698_3873443394.mp4'
