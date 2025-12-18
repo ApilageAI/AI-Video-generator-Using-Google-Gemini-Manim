@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apilage AI Video API - Documentation</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --code-bg: #0d0d12;
+            --border: #2a2a35;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: var(--accent-light);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.5rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-get { background: #22c55e33; color: #22c55e; }
+        .badge-post { background: #3b82f633; color: #3b82f6; }
+        .badge-delete { background: #ef444433; color: #ef4444; }
+
+        .endpoint {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .endpoint-path {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        code {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            color: #e0e0e0;
+        }
+
+        .code-block {
+            position: relative;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .tab-container {
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        td code {
+            background: var(--code-bg);
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .try-it {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .try-it h3 {
+            margin-top: 0;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-light);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--code-bg);
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .status-pending { background: #f59e0b33; color: #f59e0b; }
+        .status-processing { background: #3b82f633; color: #3b82f6; }
+        .status-completed { background: #22c55e33; color: #22c55e; }
+        .status-failed { background: #ef444433; color: #ef4444; }
+
+        .sdk-install {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .copy-btn {
+            background: var(--bg-secondary);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Apilage AI Video API</h1>
+            <p>Generate educational videos programmatically with AI</p>
+        </header>
+
+        <section>
+            <h2>🚀 Quick Start</h2>
+            
+            <div class="sdk-install">
+                <h3>Include the SDK</h3>
+                <pre><code>&lt;script src="https://gen.apilageai.lk/static/apilage-sdk.js"&gt;&lt;/script&gt;</code></pre>
+                
+                <h3 style="margin-top: 1.5rem;">Basic Usage</h3>
+                <pre><code>// Initialize client
+const client = new ApilageAI();
+
+// Generate a video and wait for completion
+const video = await client.generateAndWait('Explain the Pythagorean theorem', {
+    level: 'basic',
+    onProgress: (status) => {
+        console.log(`Status: ${status.status} - ${status.progress}`);
+    }
+});
+
+console.log('Video URL:', video.fullUrl);
+
+// Or use step-by-step approach
+const job = await client.generate('Explain photosynthesis');
+console.log('Job ID:', job.id);
+
+// Check status later
+await job.refresh();
+if (job.isComplete()) {
+    console.log('Video:', job.fullUrl);
+}</code></pre>
+            </div>
+
+            <h3>NPM / Node.js</h3>
+            <pre><code>// Save apilage-sdk.js to your project, then:
+const ApilageAI = require('./apilage-sdk.js');
+const client = new ApilageAI({ baseUrl: 'https://gen.apilageai.lk' });</code></pre>
+        </section>
+
+        <section>
+            <h2>📡 API Endpoints</h2>
+
+            <!-- Generate Video -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="badge badge-post">POST</span>
+                    <span class="endpoint-path">/api/generate</span>
+                </div>
+                <p>Submit a new video generation request. Returns a job ID for tracking.</p>
+                
+                <h3>Request Body</h3>
+                <table>
+                    <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                    <tr><td><code>topic</code></td><td>string</td><td>Yes</td><td>Topic to explain (3-500 chars)</td></tr>
+                    <tr><td><code>level</code></td><td>string</td><td>No</td><td>basic, intermediate, or special_topic</td></tr>
+                </table>
+
+                <div class="tab-container">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="curl-gen">cURL</div>
+                        <div class="tab" data-tab="js-gen">JavaScript</div>
+                        <div class="tab" data-tab="python-gen">Python</div>
+                    </div>
+                    <div class="tab-content active" id="curl-gen">
+                        <pre><code>curl -X POST https://gen.apilageai.lk/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{"topic": "Explain the water cycle", "level": "basic"}'</code></pre>
+                    </div>
+                    <div class="tab-content" id="js-gen">
+                        <pre><code>const client = new ApilageAI();
+const job = await client.generate('Explain the water cycle', { level: 'basic' });
+console.log('Job ID:', job.id);</code></pre>
+                    </div>
+                    <div class="tab-content" id="python-gen">
+                        <pre><code>import requests
+
+response = requests.post('https://gen.apilageai.lk/api/generate', json={
+    'topic': 'Explain the water cycle',
+    'level': 'basic'
+})
+print(response.json())</code></pre>
+                    </div>
+                </div>
+
+                <h3>Response</h3>
+                <pre><code>{
+  "success": true,
+  "job_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "message": "Video generation queued",
+  "queue_position": 1,
+  "status_url": "/api/status/a1b2c3d4-...",
+  "video_url": "/api/video/a1b2c3d4-..."
+}</code></pre>
+            </div>
+
+            <!-- Check Status -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="endpoint-path">/api/status/{job_id}</span>
+                </div>
+                <p>Check the status of a video generation job.</p>
+                
+                <div class="tab-container">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="curl-status">cURL</div>
+                        <div class="tab" data-tab="js-status">JavaScript</div>
+                    </div>
+                    <div class="tab-content active" id="curl-status">
+                        <pre><code>curl https://gen.apilageai.lk/api/status/a1b2c3d4-e5f6-7890-abcd-ef1234567890</code></pre>
+                    </div>
+                    <div class="tab-content" id="js-status">
+                        <pre><code>const status = await client.getStatus('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
+console.log(status);</code></pre>
+                    </div>
+                </div>
+
+                <h3>Response (Processing)</h3>
+                <pre><code>{
+  "success": true,
+  "job": {
+    "id": "a1b2c3d4-...",
+    "status": "processing",  // pending | processing | completed | failed
+    "progress": "Rendering video...",
+    "queue_position": null,
+    "topic": "Explain the water cycle"
+  }
+}</code></pre>
+            </div>
+
+            <!-- Get Video -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="endpoint-path">/api/video/{job_id}</span>
+                </div>
+                <p>Get video details when generation is complete.</p>
+                
+                <h3>Response (Completed)</h3>
+                <pre><code>{
+  "success": true,
+  "ready": true,
+  "video_url": "/videos/video_12345.mp4",
+  "full_url": "https://gen.apilageai.lk/videos/video_12345.mp4",
+  "subtitles": "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\n...",
+  "topic": "Explain the water cycle"
+}</code></pre>
+            </div>
+
+            <!-- Queue Status -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="endpoint-path">/api/queue</span>
+                </div>
+                <p>Get current queue status and pending jobs.</p>
+                
+                <h3>Response</h3>
+                <pre><code>{
+  "success": true,
+  "queue": {
+    "pending": 3,
+    "processing": 1,
+    "total_jobs": 150
+  },
+  "pending_jobs": [...],
+  "processing_jobs": [...]
+}</code></pre>
+            </div>
+
+            <!-- List Videos -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="badge badge-get">GET</span>
+                    <span class="endpoint-path">/api/videos</span>
+                </div>
+                <p>Get list of all generated videos with pagination.</p>
+                
+                <table>
+                    <tr><th>Query Param</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                    <tr><td><code>limit</code></td><td>number</td><td>50</td><td>Max videos to return</td></tr>
+                    <tr><td><code>offset</code></td><td>number</td><td>0</td><td>Pagination offset</td></tr>
+                </table>
+            </div>
+
+            <!-- Cancel Job -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="badge badge-post">POST</span>
+                    <span class="endpoint-path">/api/cancel/{job_id}</span>
+                </div>
+                <p>Cancel a pending job. Only works for jobs still in queue.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>🧪 Try It Live</h2>
+            <div class="try-it">
+                <h3>Generate a Video</h3>
+                <input type="text" id="topic" placeholder="Enter topic (e.g., Explain gravity)" value="Explain the concept of gravity">
+                <select id="level">
+                    <option value="basic">Basic</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="special_topic">Advanced</option>
+                </select>
+                <button id="generateBtn" onclick="generateVideo()">Generate Video</button>
+                <button id="checkBtn" onclick="checkStatus()" disabled>Check Status</button>
+                
+                <div id="result" style="display: none;"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>📦 SDK Reference</h2>
+            
+            <h3>Constructor Options</h3>
+            <pre><code>const client = new ApilageAI({
+    baseUrl: 'https://gen.apilageai.lk',  // API base URL
+    pollInterval: 3000,                    // Status polling interval (ms)
+    timeout: 30000                         // Request timeout (ms)
+});</code></pre>
+
+            <h3>Methods</h3>
+            <table>
+                <tr><th>Method</th><th>Description</th></tr>
+                <tr><td><code>generate(topic, options)</code></td><td>Submit video request, returns Job</td></tr>
+                <tr><td><code>generateAndWait(topic, options)</code></td><td>Generate and wait for completion</td></tr>
+                <tr><td><code>getStatus(jobId)</code></td><td>Get job status</td></tr>
+                <tr><td><code>getVideo(jobId)</code></td><td>Get video details</td></tr>
+                <tr><td><code>cancelJob(jobId)</code></td><td>Cancel pending job</td></tr>
+                <tr><td><code>getQueue()</code></td><td>Get queue status</td></tr>
+                <tr><td><code>getVideos(options)</code></td><td>List all videos</td></tr>
+                <tr><td><code>health()</code></td><td>Health check</td></tr>
+            </table>
+
+            <h3>Job Object</h3>
+            <pre><code>const job = await client.generate('Topic');
+
+job.id              // Job ID
+job.status          // 'pending' | 'processing' | 'completed' | 'failed'
+job.progress        // Current progress message
+job.queuePosition   // Position in queue (if pending)
+job.videoUrl        // Video URL (if completed)
+job.fullUrl         // Full video URL with domain
+job.error           // Error message (if failed)
+
+await job.refresh();              // Update status from server
+await job.waitForCompletion();    // Wait until done
+await job.cancel();               // Cancel if pending</code></pre>
+        </section>
+
+        <footer>
+            <p>© 2025 Apilage AI. All rights reserved.</p>
+            <p><a href="/" style="color: var(--accent);">← Back to Video Generator</a></p>
+        </footer>
+    </div>
+
+    <script src="/static/apilage-sdk.js"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabGroup = tab.parentElement;
+                const contentGroup = tabGroup.nextElementSibling.parentElement;
+                
+                tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const contents = tabGroup.parentElement.querySelectorAll('.tab-content');
+                contents.forEach(c => c.classList.remove('active'));
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Live testing
+        const client = new ApilageAI();
+        let currentJobId = null;
+        let pollInterval = null;
+
+        async function generateVideo() {
+            const topic = document.getElementById('topic').value;
+            const level = document.getElementById('level').value;
+            const result = document.getElementById('result');
+            const generateBtn = document.getElementById('generateBtn');
+            const checkBtn = document.getElementById('checkBtn');
+
+            if (!topic) {
+                alert('Please enter a topic');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            result.style.display = 'block';
+            result.textContent = 'Submitting request...';
+
+            try {
+                const job = await client.generate(topic, { level });
+                currentJobId = job.id;
+                
+                result.textContent = JSON.stringify({
+                    success: true,
+                    job_id: job.id,
+                    status: job.status,
+                    queue_position: job.queuePosition
+                }, null, 2);
+
+                checkBtn.disabled = false;
+                
+                // Start polling
+                startPolling();
+            } catch (error) {
+                result.textContent = JSON.stringify({ error: error.message }, null, 2);
+                generateBtn.disabled = false;
+            }
+        }
+
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                await checkStatus();
+            }, 3000);
+        }
+
+        async function checkStatus() {
+            if (!currentJobId) return;
+
+            const result = document.getElementById('result');
+            const generateBtn = document.getElementById('generateBtn');
+
+            try {
+                const status = await client.getStatus(currentJobId);
+                result.textContent = JSON.stringify(status, null, 2);
+
+                if (status.status === 'completed' || status.status === 'failed') {
+                    generateBtn.disabled = false;
+                    if (pollInterval) {
+                        clearInterval(pollInterval);
+                        pollInterval = null;
+                    }
+                    
+                    if (status.status === 'completed') {
+                        result.textContent += '\n\n✅ Video ready: ' + window.location.origin + status.video_url;
+                    }
+                }
+            } catch (error) {
+                result.textContent = JSON.stringify({ error: error.message }, null, 2);
+            }
+        }
+    </script>
+</body>
+</html>

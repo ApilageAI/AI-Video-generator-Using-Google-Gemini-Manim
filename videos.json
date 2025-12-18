@@ -1,5 +1,109 @@
 [
   {
+    "title": "Explan me how can I prove qudratic formula step...",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:04.000\nHere's a step-by-step proof of the quadratic formula.\n\n00:04.000 --> 00:09.000\nWe start with the general quadratic equation: ax squared plus bx plus c equals zero.\n\n00:09.000 --> 00:11.500\nDivide the entire equation by a.\n\n00:11.500 --> 00:16.000\nThis gives us x squared plus b over a times x plus c over a equals zero.\n\n00:16.000 --> 00:20.500\nNow, we complete the square by adding and subtracting b over 2a squared.\n\n00:20.500 --> 00:23.500\nRearrange the equation to isolate the squared term.\n\n00:23.500 --> 00:27.000\nSimplify the right side by finding a common denominator.\n\n00:27.000 --> 00:30.000\nNow, take the square root of both sides of the equation.\n\n00:30.000 --> 00:36.500\nFinally, isolate x to get the quadratic formula: x equals negative b plus or minus the square root of b squared minus 4ac, all over 2a.\n\n00:36.500 --> 00:39.500\nHere's an example of how to use the quadratic formula.\n\n00:39.500 --> 00:42.500\nConsider the equation: x squared minus 5x plus 6 equals zero.\n\n00:42.500 --> 00:45.000\nPlug the values into the quadratic formula.\n\n00:45.000 --> 00:47.000\nThis simplifies to x equals 2 or 3.\n\n00:47.000 --> 00:49.000\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T10:14:29.412372"
+  },
+  {
+    "title": "Create video to explain shapes for kids need 5 ...",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:02.000\nHello kids! Let's learn about shapes!\n\n00:02.000 --> 00:04.500\nFirst, we have a circle.\n\n00:04.500 --> 00:05.500\nThis is a circle.\n\n00:06.000 --> 00:08.500\nNext, we have a square.\n\n00:08.500 --> 00:09.500\nThis is a square.\n\n00:10.000 --> 00:13.000\nNow, let's look at a triangle. This is a triangle.\n\n00:13.500 --> 00:16.000\nHere's a rectangle. This is a rectangle.\n\n00:16.500 --> 00:18.000\nAnd finally, a star.\n\n00:18.000 --> 00:19.000\nThis is a star.\n\n00:19.500 --> 00:24.000\nWe learned about a circle, a square, a triangle, a rectangle, and a star.\n\n00:24.500 --> 00:26.500\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T10:04:52.146954"
+  },
+  {
+    "title": "Explain me past perfect tenses",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:04.000\nWelcome to this lesson on the past perfect tense.\n\n00:04.000 --> 00:09.000\nThe past perfect tense describes an action that was completed before another action in the past.\n\n00:09.000 --> 00:12.000\nThe structure is had plus the past participle of the verb.\n\n00:12.000 --> 00:16.000\nSubject plus had plus verb in the past participle form.\n\n00:16.000 --> 00:17.000\nLet's look at some examples.\n\n00:17.000 --> 00:21.000\nI had finished my work before they arrived.\n\n00:21.000 --> 00:25.000\nShe had studied French before she moved to Paris.\n\n00:25.000 --> 00:28.000\nThey had eaten dinner when I called them.\n\n00:28.000 --> 00:30.000\nHere are the key points.\n\n00:30.000 --> 00:35.000\nThe past perfect tense describes an action completed before another action in the past.\n\n00:35.000 --> 00:38.000\nThe structure is had plus the past participle.\n\n00:38.000 --> 00:42.000\nAnd it is used when the time order is not always important.\n\n00:42.000 --> 00:44.000\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T10:00:27.285780"
+  },
+  {
+    "title": "Explain me how to prove quadratic formula",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:05.000\nHere's how to prove the quadratic formula.\nWe start with the standard form:\n\n00:05.000 --> 00:09.000\nax squared plus bx plus c equals zero.\n\n00:09.000 --> 00:13.000\nFirst, divide the entire equation by a.\n\n00:13.000 --> 00:17.000\nThis gives us x squared plus b over a times x plus c over a equals zero.\n\n00:17.000 --> 00:20.000\nNext, we complete the square.\n\n00:20.000 --> 00:24.000\nFirst, move the constant term: x squared plus b over a times x equals negative c over a.\n\n00:24.000 --> 00:31.000\nNow, add b over 2a, squared, to both sides. This becomes: (x plus b over 2a) all squared equals (b squared minus 4ac) over (4a squared).\n\n00:31.000 --> 00:34.000\nFinally, solve for x.\n\n00:34.000 --> 00:37.000\nTake the square root of both sides.\n\n00:37.000 --> 00:41.000\nThis gives us x plus b over 2a equals plus or minus the square root of (b squared minus 4ac) over 2a.\n\n00:41.000 --> 00:43.000\nIsolate x.\n\n00:43.000 --> 00:48.000\nThis gives us x equals negative b over 2a plus or minus the square root of (b squared minus 4ac) over 2a.\n\n00:48.000 --> 00:52.000\nCombine the fractions to get the quadratic formula.\n\n00:52.000 --> 00:57.000\nx equals negative b plus or minus the square root of b squared minus 4ac, all divided by 2a.\n\n00:57.000 --> 00:59.000\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T09:49:33.499145"
+  },
+  {
+    "title": "Show how Goal clashes works",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:05.000\nWelcome to this video on understanding goal clashes.\n\n00:05.000 --> 00:10.000\nGoal clashes occur when pursuing one goal actively hinders the achievement of another.\n\n00:10.000 --> 00:11.500\nLet's look at some examples.\n\n00:11.500 --> 00:16.500\nFirst, consider the clash between time and quality.\n\n00:16.500 --> 00:22.500\nOne goal might be to complete a project quickly. The opposing goal is to ensure the highest possible quality.\n\n00:22.500 --> 00:25.500\nSpeed can compromise quality, and vice versa.\n\n00:25.500 --> 00:30.000\nNext, think about cost versus scope.\n\n00:30.000 --> 00:34.500\nA goal to minimize project costs can clash with the desire to maximize the number of features included.\n\n00:34.500 --> 00:37.500\nAdding features increases cost, while cutting costs limits features.\n\n00:37.500 --> 00:44.000\nFinally, let's examine short-term versus long-term goals. Maximizing profit in the current quarter could clash with building sustainable growth for the future.\n\n00:44.000 --> 00:47.000\nShort-term gains might sacrifice long-term stability.\n\n00:47.000 --> 00:56.000\nWhen facing goal clashes, identify the conflicting goals, prioritize them strategically based on your overall objectives, and actively seek compromises or alternative solutions that address both.\n\n00:56.000 --> 00:59.000\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T09:27:49.818005"
+  },
+  {
+    "title": "Explain how gravity works",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:03.000\nLet's explore how gravity works.\n\n00:03.000 --> 00:07.500\nFirst, we have Newton's Law of Universal Gravitation.\n\n00:07.500 --> 00:13.500\nThis law states that the force of gravity is proportional to the product of the masses\nand inversely proportional to the square of the distance between them.\n\n00:13.500 --> 00:19.000\nThe formula is F equals G times m1 times m2 divided by r squared.\n\n00:19.000 --> 00:23.500\nNext, we have Einstein's General Relativity.\n\n00:23.500 --> 00:29.000\nThis theory describes gravity as the curvature of spacetime caused by mass and energy.\n\n00:29.000 --> 00:34.000\nObjects follow the curves in spacetime, which we perceive as gravity.\n\n00:34.000 --> 00:40.000\nFinally, there are gravitational waves. These are ripples in spacetime\ncaused by accelerating massive objects, such as black hole mergers.\n\n00:40.000 --> 00:45.000\nTo summarize, Newton described gravity as a force.\n\n00:45.000 --> 00:50.000\nEinstein described it as the curvature of spacetime.\n\n00:50.000 --> 00:53.000\nAnd gravitational waves are ripples in spacetime.\n\n00:53.000 --> 00:56.000\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T09:26:22.717921"
+  },
+  {
+    "title": "Explain the concept of gravity",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "basic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:05.000\nWelcome to this lesson on understanding gravity.\n\n00:05.000 --> 00:10.000\nGravity is a force that attracts objects with mass towards each other.\n\n00:10.000 --> 00:14.000\nLet's look at some examples.\n\n00:14.000 --> 00:18.000\nFirst, we have an apple falling from a tree.\n\n00:18.000 --> 00:21.000\nThe Earth's gravity pulls the apple down.\n\n00:21.000 --> 00:25.000\nNext, consider the Earth orbiting the Sun.\n\n00:25.000 --> 00:28.000\nThe Sun's gravity keeps the Earth in orbit.\n\n00:28.000 --> 00:32.000\nAnother example is the Moon orbiting the Earth.\n\n00:32.000 --> 00:36.000\nThe Earth's gravity keeps the Moon in its orbit around us.\n\n00:36.000 --> 00:41.000\nLet's summarize the key points.\n\n00:41.000 --> 00:44.000\nGravity is a force of attraction.\n\n00:44.000 --> 00:48.000\nIt acts between objects with mass.\n\n00:48.000 --> 00:51.000\nAnd it holds planets in orbit.\n\n00:51.000 --> 00:54.000\nThis video was created by Apilage AI.\n```",
+    "created": "2025-12-09T09:22:37.146938",
+    "job_id": "53d91338-a5fc-43fe-9d36-131695711b02"
+  },
+  {
+    "title": "30 second video of Explaining what is past perf...",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:04.000\nThe past perfect tense describes an action\ncompleted before another action in the past.\n\n00:04.000 --> 00:09.000\nFor example: I had finished my work\nbefore he arrived.\n\n00:09.000 --> 00:12.000\nNotice \"had finished\" and \"arrived\".\n\n00:12.000 --> 00:16.000\nThe structure is: had plus past participle.\n\n00:16.000 --> 00:20.000\nHere is another example: She had eaten\nwhen I called.\n\n00:20.000 --> 00:24.000\nThe past perfect describes the earlier\npast action.\n```",
+    "created": "2025-12-06T20:06:27.415448"
+  },
+  {
+    "title": "explain english simple present tense",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "special_topic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:04.000\nThe simple present tense has advanced uses beyond facts and habits.\n\n00:04.000 --> 00:08.000\nWe use it for general facts, like \"The sun rises in the east,\" and for habits, such as \"I drink coffee every morning.\"\n\n00:08.000 --> 00:13.000\nIt can also describe scheduled future events. For instance, \"The train leaves at 6 PM tomorrow.\"\n\n00:13.000 --> 00:17.000\nFinally, it's used when narrating stories to create a sense of immediacy.\n\n00:17.000 --> 00:19.000\nFor example, \"So, he goes to the door...\"\n```",
+    "created": "2025-12-06T19:53:09.970971"
+  },
+  {
+    "title": "xplain simple present tense and past perfect te...",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "basic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:04.000\nLet's learn about simple present and past perfect tense.\n\n00:04.000 --> 00:07.000\nSimple present describes habits and facts.\n\n00:07.000 --> 00:10.000\nFor example, I eat breakfast every morning.\n\n00:10.000 --> 00:12.000\nNotice the verb eat.\n\n00:12.000 --> 00:16.000\nPast perfect describes an action completed before another past action.\n\n00:16.000 --> 00:20.000\nFor example, I had eaten breakfast before I went to school.\n\n00:20.000 --> 00:22.500\nNotice had eaten.\n```",
+    "created": "2025-12-06T19:21:50.622909"
+  },
+  {
+    "title": "xplain simple present tense and past perfect te...",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "basic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:04.000\nLet's learn about the simple present and past perfect tenses.\n\n00:04.000 --> 00:07.000\nThe simple present is used for habits, facts, and routines.\n\n00:07.000 --> 00:09.500\nFor example: I eat breakfast every morning.\n\n00:09.500 --> 00:14.500\nThe past perfect describes an action completed before another action in the past.\n\n00:14.500 --> 00:18.500\nFor example: I had eaten breakfast before school started.\nNotice that \"had eaten\" happened before \"started.\"\n```",
+    "created": "2025-12-06T19:20:58.813997"
+  },
+  {
+    "title": "Explain of shapes for kids",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "basic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:02.000\nHello kids! Let's learn about shapes!\n\n00:02.000 --> 00:05.000\nFirst, we have a circle.\nIt's round and has no corners!\n\n00:05.000 --> 00:08.000\nNext up is the square.\nIt has four sides and four corners, all the same!\n\n00:08.000 --> 00:11.000\nAnd here is a triangle!\nIt has three sides and three corners.\n\n00:11.000 --> 00:13.000\nShapes are everywhere around us!\nCan you find them?\n\n00:13.000 --> 00:14.000\nGoodbye!\n```",
+    "created": "2025-12-06T18:57:38.549279"
+  },
+  {
+    "title": "A simple video of Hey welcome to sri Lanka (Basic)",
+    "url": "/videos/MathExplanationScene.mp4",
+    "filename": "MathExplanationScene.mp4",
+    "level": "basic",
+    "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:02.000\nLet's learn to count to three!\n\n00:02.000 --> 00:04.000\nHere is one blue circle.\n\n00:04.000 --> 00:07.000\nNow, here is one more, that makes two green circles!\n\n00:07.000 --> 00:10.000\nAdding another, that's three red circles!\n\n00:10.000 --> 00:12.000\nSo we have one, two, and three!\n\n00:12.000 --> 00:13.000\nGreat job learning to count.\n```"
+  },
+  {
     "title": "Explanation video of Shapes \nCircle \nRectangle \nTr...",
     "url": "/videos/MathExplanationScene.mp4",
     "filename": "MathExplanationScene.mp4",

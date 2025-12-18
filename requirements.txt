@@ -1,5 +1,4 @@
 flask
 google-generativeai
-manim
 elevenlabs
 python-dotenv

@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoGen AI - YouTube Style</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>ManimGen AI - Math Video Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --bg-card: rgba(26, 26, 46, 0.8);
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: rgba(99, 102, 241, 0.2);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,266 +35,569 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-2%, 2%) rotate(1deg); }
+            50% { transform: translate(2%, -2%) rotate(-1deg); }
+            75% { transform: translate(-1%, -1%) rotate(0.5deg); }
+        }
+
+        /* Container Layout */
         .container {
             display: flex;
             min-height: 100vh;
         }
 
+        /* Sidebar */
         .sidebar {
-            width: 240px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            padding: 20px 0;
+            width: 280px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 0;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
-            padding: 0 24px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 20px;
+            padding: 0 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
         }
 
         .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ff0000;
-        }
-
-        .tabs {
-            list-style: none;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 16px;
-            transition: background-color 0.2s;
+            gap: 12px;
         }
 
-        .tab:hover {
-            background-color: #f0f0f0;
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--shadow-glow);
         }
 
-        .tab.active {
-            background-color: #e0e0e0;
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            padding: 0 12px;
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
             font-weight: 500;
+            margin-bottom: 4px;
         }
 
-        .tab-icon {
+        .nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-item i {
+            font-size: 18px;
             width: 24px;
-            height: 24px;
-            opacity: 0.7;
+            text-align: center;
         }
 
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent-primary);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .nav-item.active .nav-badge {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 240px;
+            margin-left: 280px;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
 
+        /* Header */
         .header {
-            background-color: #ffffff;
-            padding: 16px 24px;
-            border-bottom: 1px solid #e0e0e0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
         .header-content {
             display: flex;
             align-items: center;
-            gap: 20px;
+            justify-content: space-between;
+            gap: 24px;
         }
 
-        .search-bar {
+        .search-container {
             flex: 1;
-            max-width: 600px;
+            max-width: 500px;
             position: relative;
         }
 
         .search-input {
             width: 100%;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            border-radius: 24px;
-            font-size: 16px;
-            outline: none;
+            padding: 14px 20px 14px 50px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
         }
 
         .search-input:focus {
-            border-color: #1a73e8;
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .header-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Content Area */
         .content {
             flex: 1;
-            padding: 24px;
+            padding: 32px;
             overflow-y: auto;
         }
 
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Video Creator Tab */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Creator Section */
         .creator-section {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
-        .creator-card {
-            background-color: #ffffff;
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .creator-title {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 24px;
-            color: #333;
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .creator-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
         }
 
         .input-group {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-label i {
+            color: var(--accent-primary);
+        }
+
+        .input-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            padding: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
+            height: 140px;
+            padding: 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
             resize: vertical;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
         }
 
         textarea:focus {
             outline: none;
-            border-color: #ff0000;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        .level-select {
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        select {
             width: 100%;
-            padding: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
-            background-color: #ffffff;
+            padding: 16px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: inherit;
             cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
         }
 
-        .level-select:focus {
+        select:focus {
             outline: none;
-            border-color: #ff0000;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .generate-btn {
-            background-color: #ff0000;
-            color: white;
+            width: 100%;
+            padding: 18px 32px;
+            background: var(--accent-gradient);
             border: none;
-            padding: 16px 32px;
+            border-radius: 14px;
+            color: white;
             font-size: 16px;
-            font-weight: 500;
-            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
         }
 
-        .generate-btn:hover {
-            background-color: #cc0000;
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
         }
 
         .generate-btn:disabled {
-            background-color: #cccccc;
+            opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .loading {
+        /* Loading State */
+        .loading-container {
             display: none;
             text-align: center;
-            margin-top: 20px;
-            color: #666;
+            padding: 40px;
+            margin-top: 24px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
         }
 
-        .error {
-            color: #ff0000;
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #ffeaea;
-            border-radius: 8px;
+        .loading-container.active {
+            display: block;
         }
 
-        /* Video Gallery Tab */
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .loading-subtext {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .loading-steps {
+            margin-top: 24px;
+            text-align: left;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .loading-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .loading-step.active {
+            color: var(--accent-primary);
+        }
+
+        .loading-step.completed {
+            color: var(--success);
+        }
+
+        .loading-step i {
+            width: 20px;
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            color: var(--error);
+        }
+
+        .error-message.active {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .error-message i {
+            margin-top: 2px;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            color: var(--success);
+        }
+
+        .success-message.active {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Gallery Section */
         .gallery-section {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         .gallery-header {
-            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
         }
 
-        .gallery-title {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            color: #333;
+        .video-count {
+            background: var(--bg-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .video-count span {
+            color: var(--accent-primary);
+            font-weight: 600;
         }
 
         .videos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
         }
 
         .video-card {
-            background-color: #ffffff;
-            border-radius: 12px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .video-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            border-color: var(--accent-primary);
         }
 
         .video-thumbnail {
             position: relative;
             width: 100%;
-            height: 180px;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            aspect-ratio: 16/9;
+            background: var(--bg-secondary);
             overflow: hidden;
         }
 
@@ -282,44 +607,66 @@
             object-fit: cover;
         }
 
-        .play-button {
+        .video-overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background-color: rgba(255, 255, 255, 0.9);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .video-overlay {
+            opacity: 1;
+        }
+
+        .play-btn {
+            width: 70px;
+            height: 70px;
+            background: var(--accent-gradient);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.8;
-            transition: opacity 0.3s;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-glow);
         }
 
-        .play-button:hover {
-            opacity: 1;
+        .video-card:hover .play-btn {
+            transform: scale(1);
         }
 
-        .play-icon {
-            width: 0;
-            height: 0;
-            border-left: 15px solid #ff0000;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            margin-left: 3px;
+        .play-btn i {
+            font-size: 24px;
+            color: white;
+            margin-left: 4px;
+        }
+
+        .video-duration {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .video-info {
-            padding: 16px;
+            padding: 20px;
         }
 
         .video-title {
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
-            color: #333;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -328,126 +675,230 @@
         }
 
         .video-meta {
-            font-size: 14px;
-            color: #666;
-        }
-
-        /* Video Player Modal */
-        .video-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.9);
-        }
-
-        .video-modal-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
         }
 
-        .video-player-section {
-            flex: 2;
-            background-color: #000;
+        .video-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 24px;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .empty-icon i {
+            font-size: 32px;
+            color: var(--text-muted);
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .empty-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .empty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-video-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
             position: relative;
         }
 
-        .video-player {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            max-height: 100vh;
-        }
-
-        .close-btn {
+        .modal-header {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1001;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
         }
 
-        .download-btn {
-            position: absolute;
-            top: 20px;
-            right: 80px;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1001;
-        }
-
-        .download-btn:hover {
-            background-color: rgba(255, 255, 255, 1);
-        }
-
-        .subtitles-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
+        .modal-title {
             font-size: 18px;
-            text-align: center;
-            max-width: 80%;
-            z-index: 1001;
+            font-weight: 600;
         }
 
-        .related-videos-section {
-            flex: 1;
-            background-color: #ffffff;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .related-title {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            color: #333;
-        }
-
-        .related-video-card {
+        .modal-actions {
             display: flex;
             gap: 12px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color 0.2s;
         }
 
-        .related-video-card:hover {
-            background-color: #f0f0f0;
+        .modal-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .close-modal {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background: var(--error);
+            border-color: var(--error);
+        }
+
+        .modal-video {
+            width: 100%;
+            max-width: 1000px;
+            max-height: 70vh;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-sidebar {
+            width: 400px;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title i {
+            color: var(--accent-primary);
+        }
+
+        .related-video {
+            display: flex;
+            gap: 14px;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+        }
+
+        .related-video:hover {
+            background: var(--bg-secondary);
         }
 
         .related-thumbnail {
-            width: 120px;
-            height: 68px;
-            background-color: #f0f0f0;
-            border-radius: 8px;
+            width: 140px;
+            height: 80px;
+            border-radius: 10px;
             overflow: hidden;
             flex-shrink: 0;
+            background: var(--bg-secondary);
         }
 
         .related-thumbnail video {
@@ -458,13 +909,13 @@
 
         .related-info {
             flex: 1;
+            min-width: 0;
         }
 
-        .related-video-title {
+        .related-title {
             font-size: 14px;
             font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -472,137 +923,330 @@
             overflow: hidden;
         }
 
-        .related-video-meta {
+        .related-meta {
             font-size: 12px;
-            color: #666;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .modal-sidebar {
+                width: 320px;
+            }
         }
 
         @media (max-width: 1024px) {
             .sidebar {
-                width: 200px;
+                transform: translateX(-100%);
             }
 
-            .main-content {
-                margin-left: 200px;
-            }
-
-            .video-modal-content {
-                flex-direction: column;
-            }
-
-            .video-player-section {
-                flex: none;
-                height: 60vh;
-            }
-
-            .related-videos-section {
-                flex: none;
-                height: 40vh;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
+            .sidebar.open {
+                transform: translateX(0);
             }
 
             .main-content {
                 margin-left: 0;
             }
 
+            .modal-content {
+                flex-direction: column;
+            }
+
+            .modal-video-section {
+                flex: none;
+                height: 60vh;
+            }
+
+            .modal-sidebar {
+                width: 100%;
+                height: 40vh;
+            }
+        }
+
+        @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 gap: 16px;
             }
 
-            .search-bar {
+            .search-container {
                 max-width: none;
+                width: 100%;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .creator-card {
+                padding: 24px;
             }
 
             .videos-grid {
                 grid-template-columns: 1fr;
             }
 
-            .video-modal-content {
+            .gallery-header {
                 flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
             }
+        }
 
-            .video-player-section {
-                height: 50vh;
-            }
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .related-videos-section {
-                height: 50vh;
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: flex;
             }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+        }
+
+        .toast.error i {
+            color: var(--error);
         }
     </style>
 </head>
 <body>
+    <div class="bg-animation"></div>
+
     <div class="container">
-        <aside class="sidebar">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">VideoGen AI</div>
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <span class="logo-text">ManimGen</span>
+                </div>
             </div>
-            <ul class="tabs">
-                <li class="tab active" data-tab="creator">
-                    <svg class="tab-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    Video Creator
-                </li>
-                <li class="tab" data-tab="gallery">
-                    <svg class="tab-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/>
-                    </svg>
-                    Video Gallery
-                </li>
-            </ul>
+
+            <nav class="nav-section">
+                <div class="nav-title">Main Menu</div>
+                <div class="nav-item active" data-tab="creator">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span>Create Video</span>
+                </div>
+                <div class="nav-item" data-tab="gallery">
+                    <i class="fas fa-photo-film"></i>
+                    <span>Video Gallery</span>
+                    <span class="nav-badge" id="video-count-badge">0</span>
+                </div>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-title">Resources</div>
+                <div class="nav-item" onclick="window.open('https://docs.manim.community/', '_blank')">
+                    <i class="fas fa-book"></i>
+                    <span>Documentation</span>
+                </div>
+                <div class="nav-item" onclick="window.open('https://github.com/ManimCommunity/manim', '_blank')">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </div>
+            </nav>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
+            <!-- Header -->
             <header class="header">
                 <div class="header-content">
-                    <div class="search-bar">
-                        <input type="text" id="search-input" class="search-input" placeholder="Search videos...">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="search-input" placeholder="Search videos...">
+                    </div>
+                    <div class="header-actions">
+                        <a href="/api-docs" class="header-btn" title="API Documentation" style="text-decoration: none;">
+                            <i class="fas fa-code"></i>
+                        </a>
+                        <button class="header-btn" onclick="loadVideos()" title="Refresh">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
                 </div>
             </header>
 
+            <!-- Content -->
             <div class="content">
-                <!-- Video Creator Tab -->
+                <!-- Creator Tab -->
                 <div id="creator-tab" class="tab-content active">
                     <div class="creator-section">
+                        <h1 class="page-title">Create Educational Video</h1>
+                        <p class="page-subtitle">Transform any educational topic into beautiful animated videos powered by AI</p>
+
                         <div class="creator-card">
-                            <h1 class="creator-title">Create Your Video</h1>
                             <div class="input-group">
-                                <label for="text-input">Describe Your Video</label>
-                                <textarea id="text-input" placeholder="e.g., A bouncing ball with colorful text saying 'Hello World' that fades in and out"></textarea>
+                                <label class="input-label">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Topic to Explain
+                                </label>
+                                <p class="input-hint">Describe what you want to teach - math, grammar, science, history, or any topic</p>
+                                <textarea id="text-input" placeholder="Examples:
+• Explain simple present tense and past perfect tense with examples
+• How photosynthesis works in plants
+• The Pythagorean theorem with visual proof
+• Difference between mitosis and meiosis
+• Basic programming loops explained"></textarea>
                             </div>
+
                             <div class="input-group">
-                                <label for="level-select">Difficulty Level</label>
-                                <select id="level-select" class="level-select">
-                                    <option value="basic">Basic</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="special_topic">Special Topic</option>
-                                </select>
+                                <label class="input-label">
+                                    <i class="fas fa-signal"></i>
+                                    Difficulty Level
+                                </label>
+                                <p class="input-hint">Choose the complexity of the explanation</p>
+                                <div class="select-wrapper">
+                                    <select id="level-select">
+                                        <option value="basic">🌱 Basic - Fundamental concepts</option>
+                                        <option value="intermediate">📚 Intermediate - Detailed explanations</option>
+                                        <option value="special_topic">🎓 Advanced - In-depth analysis</option>
+                                    </select>
+                                </div>
                             </div>
-                            <button id="generate-btn" class="generate-btn" onclick="generateVideo()">Generate Video</button>
-                            <div id="loading" class="loading">
-                                <p>Generating your video... This may take a few minutes.</p>
+
+                            <button class="generate-btn" id="generate-btn" onclick="generateVideo()">
+                                <i class="fas fa-magic"></i>
+                                Generate Video
+                            </button>
+
+                            <div class="loading-container" id="loading">
+                                <div class="spinner"></div>
+                                <p class="loading-text">Creating your video...</p>
+                                <p class="loading-subtext">This may take 1-2 minutes</p>
+                                <div class="loading-steps">
+                                    <div class="loading-step active" id="step-1">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                        <span>Generating Manim code...</span>
+                                    </div>
+                                    <div class="loading-step" id="step-2">
+                                        <i class="far fa-circle"></i>
+                                        <span>Rendering animation...</span>
+                                    </div>
+                                    <div class="loading-step" id="step-3">
+                                        <i class="far fa-circle"></i>
+                                        <span>Adding voice narration...</span>
+                                    </div>
+                                    <div class="loading-step" id="step-4">
+                                        <i class="far fa-circle"></i>
+                                        <span>Finalizing video...</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="error-message" class="error"></div>
+
+                            <div class="error-message" id="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <div>
+                                    <strong>Error:</strong>
+                                    <span id="error-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="success-message" id="success-message">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Video generated successfully! Switching to gallery...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Video Gallery Tab -->
+                <!-- Gallery Tab -->
                 <div id="gallery-tab" class="tab-content">
                     <div class="gallery-section">
                         <div class="gallery-header">
-                            <h1 class="gallery-title">Video Gallery</h1>
+                            <div>
+                                <h1 class="page-title">Video Gallery</h1>
+                                <p class="page-subtitle">Your collection of generated math videos</p>
+                            </div>
+                            <div class="video-count">
+                                <span id="total-videos">0</span> videos
+                            </div>
                         </div>
-                        <div id="videos-grid" class="videos-grid">
-                            <!-- Videos will be loaded here -->
+
+                        <div id="videos-container">
+                            <div class="videos-grid" id="videos-grid"></div>
+                            <div class="empty-state" id="empty-state" style="display: none;">
+                                <div class="empty-icon">
+                                    <i class="fas fa-video-slash"></i>
+                                </div>
+                                <h3 class="empty-title">No videos yet</h3>
+                                <p class="empty-text">Create your first math video to see it here</p>
+                                <button class="empty-btn" onclick="switchToCreator()">
+                                    <i class="fas fa-plus"></i>
+                                    Create Video
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -610,202 +1254,165 @@
         </main>
     </div>
 
-    <!-- Video Player Modal -->
-    <div id="video-modal" class="video-modal">
-        <div class="video-modal-content">
-            <div class="video-player-section">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-                <video id="modal-video" class="video-player" controls></video>
-            </div>
-            <div class="related-videos-section">
-                <h3 class="related-title">Up Next</h3>
-                <div id="related-videos">
-                    <!-- Related videos will be loaded here -->
+    <!-- Video Modal -->
+    <div class="video-modal" id="video-modal">
+        <div class="modal-content">
+            <div class="modal-video-section">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modal-video-title"></h2>
+                    <div class="modal-actions">
+                        <button class="modal-btn" onclick="downloadVideo()">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                        <button class="close-modal" onclick="closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
+                <video class="modal-video" id="modal-video" controls></video>
+            </div>
+            <div class="modal-sidebar">
+                <h3 class="sidebar-title">
+                    <i class="fas fa-list"></i>
+                    Up Next
+                </h3>
+                <div id="related-videos"></div>
             </div>
         </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message"></span>
     </div>
 
     <script>
         let videos = [];
         let currentVideoIndex = -1;
+        let isLoading = false;
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-
-                // Update active tab
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                // Show corresponding content
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                document.getElementById(tabName + '-tab').classList.add('active');
-
-                // Load videos if gallery tab is selected
-                if (tabName === 'gallery') {
-                    loadVideos();
-                }
-            });
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVideos();
+            setupTabNavigation();
         });
 
+        // Tab Navigation
+        function setupTabNavigation() {
+            document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const tabName = item.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+        }
+
+        function switchTab(tabName) {
+            // Update nav items
+            document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+                item.classList.toggle('active', item.dataset.tab === tabName);
+            });
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Load videos if switching to gallery
+            if (tabName === 'gallery') {
+                loadVideos();
+            }
+        }
+
+        function switchToCreator() {
+            switchTab('creator');
+        }
+
+        // Toggle Sidebar (mobile)
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Load Videos
         async function loadVideos() {
             try {
                 const response = await fetch('/videos');
                 if (response.ok) {
                     videos = await response.json();
                     displayVideos();
+                    updateVideoCount();
                 }
             } catch (error) {
                 console.error('Error loading videos:', error);
+                showToast('Failed to load videos', 'error');
             }
         }
 
-        function displayVideos(searchTerm = '') {
-            const videosGrid = document.getElementById('videos-grid');
-            videosGrid.innerHTML = '';
+        // Update video count badge
+        function updateVideoCount() {
+            document.getElementById('video-count-badge').textContent = videos.length;
+            document.getElementById('total-videos').textContent = videos.length;
+        }
 
-            const filteredVideos = videos.filter(video =>
+        // Display Videos
+        function displayVideos(searchTerm = '') {
+            const grid = document.getElementById('videos-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            const filtered = videos.filter(video =>
                 video.title.toLowerCase().includes(searchTerm.toLowerCase())
             );
 
-            filteredVideos.forEach((video, index) => {
-                const videoCard = document.createElement('div');
-                videoCard.className = 'video-card';
-                videoCard.onclick = () => openModal(index);
-
-                videoCard.innerHTML = `
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="${video.url}" type="video/mp4">
-                        </video>
-                        <div class="play-button">
-                            <div class="play-icon"></div>
-                        </div>
-                    </div>
-                    <div class="video-info">
-                        <div class="video-title">${video.title}</div>
-                        <div class="video-meta">Generated Video</div>
-                    </div>
-                `;
-
-                videosGrid.appendChild(videoCard);
-            });
-        }
-
-        function openModal(videoIndex) {
-            currentVideoIndex = videoIndex;
-            const modal = document.getElementById('video-modal');
-            const modalVideo = document.getElementById('modal-video');
-
-            modalVideo.src = videos[videoIndex].url;
-            modal.style.display = 'flex';
-
-            displayRelatedVideos();
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('video-modal');
-            const modalVideo = document.getElementById('modal-video');
-            const subtitlesContainer = document.getElementById('subtitles-container');
-
-            modal.style.display = 'none';
-            modalVideo.pause();
-            modalVideo.src = '';
-            modalVideo.ontimeupdate = null;
-            subtitlesContainer.style.display = 'none';
-            currentVideoIndex = -1;
-        }
-
-        function displayRelatedVideos() {
-            const relatedVideosContainer = document.getElementById('related-videos');
-            relatedVideosContainer.innerHTML = '';
-
-            videos.forEach((video, index) => {
-                if (index !== currentVideoIndex) {
-                    const relatedCard = document.createElement('div');
-                    relatedCard.className = 'related-video-card';
-                    relatedCard.onclick = () => {
-                        currentVideoIndex = index;
-                        const modalVideo = document.getElementById('modal-video');
-                        modalVideo.src = videos[index].url;
-                        displayRelatedVideos();
-                    };
-
-                    relatedCard.innerHTML = `
-                        <div class="related-thumbnail">
-                            <video muted preload="metadata">
-                                <source src="${video.url}" type="video/mp4">
-                            </video>
-                        </div>
-                        <div class="related-info">
-                            <div class="related-video-title">${video.title}</div>
-                            <div class="related-video-meta">Generated Video</div>
-                        </div>
-                    `;
-
-                    relatedVideosContainer.appendChild(relatedCard);
-                }
-            });
-        }
-
-        async function generateVideo() {
-            const textInput = document.getElementById('text-input').value.trim();
-            const levelSelect = document.getElementById('level-select').value;
-            const generateBtn = document.getElementById('generate-btn');
-            const loading = document.getElementById('loading');
-            const errorMessage = document.getElementById('error-message');
-
-            if (!textInput) {
-                alert('Please enter a math topic to explain.');
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
                 return;
             }
 
-            // Disable button and show loading
-            generateBtn.disabled = true;
-            generateBtn.textContent = 'Generating...';
-            loading.style.display = 'block';
-            errorMessage.textContent = '';
+            emptyState.style.display = 'none';
+            grid.innerHTML = filtered.map((video, index) => `
+                <div class="video-card" onclick="openModal(${index})">
+                    <div class="video-thumbnail">
+                        <video muted preload="metadata" onloadedmetadata="this.currentTime = 1">
+                            <source src="${video.url}" type="video/mp4">
+                        </video>
+                        <div class="video-overlay">
+                            <div class="play-btn">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${escapeHtml(video.title)}</h3>
+                        <div class="video-meta">
+                            <span class="video-level">
+                                <i class="fas fa-signal"></i>
+                                ${formatLevel(video.level)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: textInput, level: levelSelect }),
-                });
+        // Format level text
+        function formatLevel(level) {
+            const levels = {
+                'basic': 'Basic',
+                'intermediate': 'Intermediate',
+                'special_topic': 'Advanced'
+            };
+            return levels[level] || level;
+        }
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Add new video to the list
-                    videos.unshift({
-                        title: `${textInput} (${levelSelect.charAt(0).toUpperCase() + levelSelect.slice(1)})`.substring(0, 50) + (`${textInput} (${levelSelect})`.length > 50 ? '...' : ''),
-                        url: data.video_url,
-                        filename: data.video_url.split('/').pop(),
-                        level: levelSelect,
-                        subtitles: data.subtitles
-                    });
-
-                    // Clear input
-                    document.getElementById('text-input').value = '';
-
-                    // Switch to gallery tab and refresh
-                    document.querySelector('[data-tab="gallery"]').click();
-                } else {
-                    errorMessage.textContent = data.error || 'An error occurred while generating the video.';
-                }
-            } catch (error) {
-                errorMessage.textContent = 'Failed to generate video. Please try again.';
-                console.error('Error:', error);
-            } finally {
-                // Re-enable button and hide loading
-                generateBtn.disabled = false;
-                generateBtn.textContent = 'Generate Video';
-                loading.style.display = 'none';
-            }
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // Search functionality
@@ -813,15 +1420,195 @@
             displayVideos(e.target.value);
         });
 
-        // Load videos on page load
-        window.onload = () => {
-            // Load videos for gallery tab
-            loadVideos();
-        };
+        // Generate Video
+        async function generateVideo() {
+            if (isLoading) return;
 
-        // Close modal when clicking outside
-        document.getElementById('video-modal').addEventListener('click', (event) => {
-            if (event.target === document.getElementById('video-modal')) {
+            const textInput = document.getElementById('text-input').value.trim();
+            const level = document.getElementById('level-select').value;
+            const generateBtn = document.getElementById('generate-btn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+
+            if (!textInput) {
+                showToast('Please enter a math topic', 'error');
+                return;
+            }
+
+            // Reset messages
+            errorMessage.classList.remove('active');
+            successMessage.classList.remove('active');
+
+            // Start loading
+            isLoading = true;
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            loading.classList.add('active');
+
+            // Animate loading steps
+            updateLoadingStep(1);
+
+            try {
+                // Simulate step progression
+                setTimeout(() => updateLoadingStep(2), 3000);
+                setTimeout(() => updateLoadingStep(3), 8000);
+                setTimeout(() => updateLoadingStep(4), 15000);
+
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: textInput, level: level })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    successMessage.classList.add('active');
+                    showToast('Video generated successfully!', 'success');
+
+                    // Clear input
+                    document.getElementById('text-input').value = '';
+
+                    // Reload videos and switch to gallery
+                    await loadVideos();
+                    setTimeout(() => {
+                        switchTab('gallery');
+                        successMessage.classList.remove('active');
+                    }, 1500);
+                } else {
+                    // Error
+                    document.getElementById('error-text').textContent = data.error || 'Failed to generate video';
+                    errorMessage.classList.add('active');
+                    showToast('Failed to generate video', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-text').textContent = 'Network error. Please try again.';
+                errorMessage.classList.add('active');
+                showToast('Network error', 'error');
+            } finally {
+                isLoading = false;
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Video';
+                loading.classList.remove('active');
+                resetLoadingSteps();
+            }
+        }
+
+        // Update loading step
+        function updateLoadingStep(step) {
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                if (i < step) {
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('completed');
+                    stepEl.querySelector('i').className = 'fas fa-check-circle';
+                } else if (i === step) {
+                    stepEl.classList.add('active');
+                    stepEl.classList.remove('completed');
+                    stepEl.querySelector('i').className = 'fas fa-circle-notch fa-spin';
+                } else {
+                    stepEl.classList.remove('active', 'completed');
+                    stepEl.querySelector('i').className = 'far fa-circle';
+                }
+            }
+        }
+
+        // Reset loading steps
+        function resetLoadingSteps() {
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById(`step-${i}`);
+                stepEl.classList.remove('active', 'completed');
+                stepEl.querySelector('i').className = i === 1 ? 'fas fa-circle-notch fa-spin' : 'far fa-circle';
+            }
+            document.getElementById('step-1').classList.add('active');
+        }
+
+        // Modal Functions
+        function openModal(index) {
+            currentVideoIndex = index;
+            const video = videos[index];
+            const modal = document.getElementById('video-modal');
+            const modalVideo = document.getElementById('modal-video');
+
+            document.getElementById('modal-video-title').textContent = video.title;
+            modalVideo.src = video.url;
+            modal.classList.add('active');
+
+            displayRelatedVideos();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('video-modal');
+            const modalVideo = document.getElementById('modal-video');
+
+            modal.classList.remove('active');
+            modalVideo.pause();
+            modalVideo.src = '';
+            currentVideoIndex = -1;
+            document.body.style.overflow = '';
+        }
+
+        function displayRelatedVideos() {
+            const container = document.getElementById('related-videos');
+            const related = videos.filter((_, i) => i !== currentVideoIndex);
+
+            container.innerHTML = related.map((video, i) => {
+                const originalIndex = videos.indexOf(video);
+                return `
+                    <div class="related-video" onclick="openModal(${originalIndex})">
+                        <div class="related-thumbnail">
+                            <video muted preload="metadata" onloadedmetadata="this.currentTime = 1">
+                                <source src="${video.url}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="related-info">
+                            <h4 class="related-title">${escapeHtml(video.title)}</h4>
+                            <p class="related-meta">${formatLevel(video.level)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function downloadVideo() {
+            if (currentVideoIndex >= 0) {
+                const video = videos[currentVideoIndex];
+                const link = document.createElement('a');
+                link.href = video.url;
+                link.download = video.filename || 'video.mp4';
+                link.click();
+                showToast('Download started', 'success');
+            }
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const icon = toast.querySelector('i');
+
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('video-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('video-modal')) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
                 closeModal();
             }
         });
