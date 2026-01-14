@@ -6,11 +6,104 @@ import threading
 import queue
 import uuid
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from utils import generate_manim_code, render_video
+from dotenv import load_dotenv
+from collections import defaultdict
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
+
+# ============== RATE LIMITING ==============
+# Simple in-memory rate limiter (IP-based)
+request_tracker = defaultdict(list)
+RATE_LIMIT_WINDOW = 3600  # 1 hour in seconds
+RATE_LIMIT_REQUESTS = 10  # Max 10 requests per hour per IP
+
+def get_client_ip():
+    """Get the client's IP address."""
+    if request.environ.get('HTTP_X_FORWARDED_FOR'):
+        return request.environ.get('HTTP_X_FORWARDED_FOR').split(',')[0]
+    return request.remote_addr
+
+def check_rate_limit():
+    """Check if client has exceeded rate limit."""
+    client_ip = get_client_ip()
+    now = time.time()
+    
+    # Clean old requests (older than 1 hour)
+    request_tracker[client_ip] = [
+        req_time for req_time in request_tracker[client_ip]
+        if now - req_time < RATE_LIMIT_WINDOW
+    ]
+    
+    # Check if limit exceeded
+    if len(request_tracker[client_ip]) >= RATE_LIMIT_REQUESTS:
+        return False
+    
+    # Add current request
+    request_tracker[client_ip].append(now)
+    return True
+
+# ============== AUTHENTICATION CONFIGURATION ==============
+# Load credentials from .env file
+AUTH_CODE = os.getenv('AUTH_CODE', '')
+API_KEY = os.getenv('API_KEY', '')
+
+if not AUTH_CODE or not API_KEY:
+    print("[WARNING] Authentication credentials not set in .env file!")
+    print("[WARNING] API endpoints will be protected but will fail if credentials are missing")
+
+def verify_api_credentials():
+    """
+    Verify API credentials from request headers.
+    Expected headers:
+    - X-Auth-Code: Authorization code
+    - X-API-Key: API key
+    
+    Returns: True if valid, False otherwise
+    """
+    provided_auth = request.headers.get('X-Auth-Code', '').strip()
+    provided_key = request.headers.get('X-API-Key', '').strip()
+    
+    # Check if credentials match
+    if provided_auth == AUTH_CODE and provided_key == API_KEY:
+        return True
+    
+    return False
+
+def require_api_key(f):
+    """
+    Decorator to require API authentication for endpoints.
+    Also enforces rate limiting to prevent spam.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Check rate limit first
+        if not check_rate_limit():
+            return jsonify({
+                'success': False,
+                'error': 'Rate limit exceeded. Max 10 requests per hour.',
+                'status_code': 429
+            }), 429
+        
+        # Then verify credentials
+        if not verify_api_credentials():
+            return jsonify({
+                'success': False,
+                'error': 'Unauthorized: Invalid or missing API credentials',
+                'required_headers': {
+                    'X-Auth-Code': 'Your authorization code',
+                    'X-API-Key': 'Your API key'
+                }
+            }), 401
+        
+        return f(*args, **kwargs)
+    
+    return decorated_function
 
 # ============== CORS CONFIGURATION ==============
 # Allow cross-origin requests from any domain for API endpoints
@@ -182,7 +275,9 @@ def process_job(job_id):
     except Exception as e:
         error_msg = str(e)[:500]
         print(f"[JOB {job_id[:8]}] Failed: {error_msg}")
-        update_job(job_id, status='failed', error=error_msg, progress='Failed')
+        # Mask Gemini API errors to hide technology stack
+        masked_error = mask_gemini_error(error_msg)
+        update_job(job_id, status='failed', error=masked_error, progress='Failed')
 
 
 def worker():
@@ -233,6 +328,42 @@ def stop_worker():
     worker_running = False
     if worker_thread:
         worker_thread.join(timeout=5)
+
+
+def mask_gemini_error(error_message):
+    """
+    Mask Gemini API errors to hide technology stack.
+    Shows generic error message for Gemini-specific errors.
+    Other errors pass through unchanged.
+    """
+    error_lower = error_message.lower()
+    
+    # Check if this is a Gemini API error
+    gemini_error_keywords = [
+        'api key',
+        'invalid api',
+        'expired',
+        'authentication',
+        'unauthorized',
+        'gemini',
+        'generative',  # Catches both "generative ai" and "generative-ai"
+        'googleapis.com',
+        'generativelanguage',
+        'api_key_invalid',
+        '400',  # Bad request (often API key issues)
+        '401',
+        '403',
+        'forbidden',
+        'permission denied'
+    ]
+    
+    # If it's a Gemini error, return masked message
+    for keyword in gemini_error_keywords:
+        if keyword in error_lower:
+            return "Error from apilageai.lk reach them at contact@apilageai.lk"
+    
+    # Otherwise, return the original error
+    return error_message
 
 def load_videos():
     """Load videos directly from uploads folder."""
@@ -290,6 +421,50 @@ def index():
 def api_docs():
     """Serve API documentation page."""
     return render_template('api-docs.html')
+
+
+@app.route('/api/auth-info', methods=['GET'])
+def auth_info():
+    """
+    Public endpoint that explains how to authenticate.
+    Shows the required headers and format.
+    """
+    return jsonify({
+        'message': 'This API requires authentication',
+        'status': 'authentication_required',
+        'how_to_authenticate': {
+            'description': 'All API endpoints require two headers',
+            'required_headers': [
+                {
+                    'name': 'X-Auth-Code',
+                    'description': 'Your authorization code',
+                    'example': 'X-Auth-Code: your-auth-code-here'
+                },
+                {
+                    'name': 'X-API-Key',
+                    'description': 'Your API key',
+                    'example': 'X-API-Key: your-api-key-here'
+                }
+            ],
+            'example_curl': 'curl -X POST http://localhost:5002/api/generate \\',
+            'example_curl_continued': [
+                '  -H "Content-Type: application/json" \\',
+                '  -H "X-Auth-Code: your-auth-code" \\',
+                '  -H "X-API-Key: your-api-key" \\',
+                '  -d \'{"topic": "Explain photosynthesis", "level": "basic"}\''
+            ],
+            'example_python': 'requests.post(url, headers={"X-Auth-Code": code, "X-API-Key": key}, json=data)'
+        },
+        'endpoints': [
+            {'method': 'POST', 'path': '/api/generate', 'description': 'Generate new video'},
+            {'method': 'GET', 'path': '/api/status/{job_id}', 'description': 'Check job status'},
+            {'method': 'GET', 'path': '/api/video/{job_id}', 'description': 'Get video details'},
+            {'method': 'GET', 'path': '/api/queue', 'description': 'Get queue status'},
+            {'method': 'GET', 'path': '/api/videos', 'description': 'List all videos'},
+            {'method': 'POST', 'path': '/api/cancel/{job_id}', 'description': 'Cancel a job'},
+            {'method': 'GET', 'path': '/api/uploads', 'description': 'List uploads'}
+        ]
+    })
 
 
 @app.route('/generate', methods=['POST'])
@@ -365,6 +540,9 @@ def generate():
         print(f"Error generating video: {error_message}")
         print(traceback.format_exc())
         
+        # Mask Gemini API errors to hide technology stack
+        masked_error = mask_gemini_error(error_message)
+        
         # Provide user-friendly error messages
         if "syntax" in error_message.lower():
             return jsonify({'error': 'There was a problem with the generated animation code. Please try again or use a different description.'}), 500
@@ -373,7 +551,7 @@ def generate():
         elif "manim" in error_message.lower():
             return jsonify({'error': 'Animation rendering failed. Please try again with a different topic.'}), 500
         else:
-            return jsonify({'error': f'An error occurred: {error_message[:200]}'}), 500
+            return jsonify({'error': masked_error[:200]}), 500
 
 @app.route('/videos')
 def get_videos():
@@ -425,6 +603,7 @@ def get_upload(filename):
 
 
 @app.route('/api/uploads', methods=['GET'])
+@require_api_key
 def api_uploads():
     """
     Get list of all uploaded videos in the uploads/ folder.
@@ -480,6 +659,7 @@ def health_check():
 # ============== API ENDPOINTS ==============
 
 @app.route('/api/generate', methods=['POST'])
+@require_api_key
 def api_generate():
     """
     API endpoint to submit a video generation request.
@@ -511,7 +691,7 @@ def api_generate():
         topic = data.get('topic', '').strip()
         level = data.get('level', 'basic').strip()
         
-        # Validation
+        # Input validation and sanitization
         if not topic:
             return jsonify({
                 'success': False,
@@ -529,6 +709,15 @@ def api_generate():
                 'success': False,
                 'error': 'Topic must be less than 500 characters'
             }), 400
+        
+        # Prevent common injection patterns
+        forbidden_chars = ['<', '>', '{', '}', '$(', '`', ';rm', 'DROP', 'DELETE']
+        for char in forbidden_chars:
+            if char.lower() in topic.lower():
+                return jsonify({
+                    'success': False,
+                    'error': 'Topic contains invalid characters'
+                }), 400
         
         if level not in ['basic', 'intermediate', 'special_topic']:
             level = 'basic'
@@ -550,13 +739,16 @@ def api_generate():
         
     except Exception as e:
         print(f"[API] Error: {e}")
+        # Mask Gemini API errors to hide technology stack
+        masked_error = mask_gemini_error(str(e))
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': masked_error
         }), 500
 
 
 @app.route('/api/status/<job_id>', methods=['GET'])
+@require_api_key
 def api_status(job_id):
     """
     Check the status of a video generation job.
@@ -613,6 +805,7 @@ def api_status(job_id):
 
 
 @app.route('/api/video/<job_id>', methods=['GET'])
+@require_api_key
 def api_video(job_id):
     """
     Get video details for a completed job.
@@ -656,6 +849,7 @@ def api_video(job_id):
 
 
 @app.route('/api/queue', methods=['GET'])
+@require_api_key
 def api_queue():
     """
     Get current queue status.
@@ -705,6 +899,7 @@ def api_queue():
 
 
 @app.route('/api/cancel/<job_id>', methods=['POST', 'DELETE'])
+@require_api_key
 def api_cancel(job_id):
     """
     Cancel a pending job.
@@ -733,6 +928,7 @@ def api_cancel(job_id):
 
 
 @app.route('/api/videos', methods=['GET'])
+@require_api_key
 def api_videos():
     """
     Get list of all generated videos.
