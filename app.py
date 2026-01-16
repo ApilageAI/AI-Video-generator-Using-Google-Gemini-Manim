@@ -214,7 +214,15 @@ def create_job(topic, level):
 
 
 def process_job(job_id):
-    """Process a single video generation job."""
+    """
+    Process a single video generation job using NEW AUDIO-FIRST WORKFLOW:
+    1. Generate audio script with timing
+    2. Render voice audio
+    3. Get actual audio duration
+    4. Generate adaptive Manim code based on audio timing
+    5. Render video
+    6. Combine audio and video
+    """
     job = get_job(job_id)
     if not job:
         return
@@ -223,24 +231,126 @@ def process_job(job_id):
     level = job['level']
     
     try:
-        update_job(job_id, status='processing', progress='Generating animation code...')
         print(f"[JOB {job_id[:8]}] Processing: {topic}")
+        print(f"[JOB {job_id[:8]}] Starting NEW AUDIO-FIRST WORKFLOW")
         
-        # Generate Manim code
-        code, voice_script, subtitles = generate_manim_code(topic, level)
+        # STEP 1: Generate audio script with timing
+        update_job(job_id, status='processing', progress='Generating audio script...')
+        print(f"[JOB {job_id[:8]}] STEP 1: Generating audio script with timing")
         
-        if not code:
-            update_job(job_id, status='failed', error='Failed to generate animation code')
+        from utils import generate_audio_script_with_timing, generate_audio, get_audio_timing_info, generate_adaptive_manim_code
+        
+        script_data = generate_audio_script_with_timing(topic, level)
+        if not script_data or not script_data.get('script'):
+            update_job(job_id, status='failed', error='Failed to generate audio script')
             return
         
-        update_job(job_id, progress='Rendering video...')
+        voice_script = script_data.get('script', '')
+        print(f"[JOB {job_id[:8]}] Audio script generated: {len(voice_script)} chars")
         
-        # Render video
-        video_path = render_video(code, text_input=voice_script, subtitles=subtitles)
+        # STEP 2: Render voice audio
+        update_job(job_id, status='processing', progress='Rendering voice narration...')
+        print(f"[JOB {job_id[:8]}] STEP 2: Rendering voice audio")
         
-        if not video_path or not os.path.exists(video_path):
-            update_job(job_id, status='failed', error='Video rendering failed')
+        try:
+            audio_path = generate_audio(voice_script)
+            if not audio_path or not os.path.exists(audio_path):
+                raise Exception("Audio file not created")
+            print(f"[JOB {job_id[:8]}] Audio rendered: {audio_path}")
+        except Exception as audio_error:
+            error_msg = str(audio_error)[:500]
+            print(f"[JOB {job_id[:8]}] ERROR: Audio rendering failed: {error_msg}")
+            masked_error = mask_gemini_error(error_msg)
+            update_job(job_id, status='failed', error=f"Voice rendering failed: {masked_error}")
             return
+        
+        # STEP 3: Get actual audio duration for adaptive code generation
+        update_job(job_id, status='processing', progress='Analyzing audio timing...')
+        print(f"[JOB {job_id[:8]}] STEP 3: Analyzing audio timing")
+        
+        try:
+            audio_timing = get_audio_timing_info(audio_path)
+            audio_duration = audio_timing.get('duration', 70)
+            print(f"[JOB {job_id[:8]}] Audio duration: {audio_duration:.1f} seconds")
+        except Exception as timing_error:
+            print(f"[JOB {job_id[:8]}] WARNING: Could not get audio timing: {timing_error}")
+            audio_duration = script_data.get('total_duration_estimate', 70)
+            print(f"[JOB {job_id[:8]}] Using estimated duration: {audio_duration:.1f} seconds")
+        
+        # STEP 4: Generate adaptive Manim code based on actual audio
+        update_job(job_id, status='processing', progress='Generating adaptive animations...')
+        print(f"[JOB {job_id[:8]}] STEP 4: Generating adaptive Manim code (duration: {audio_duration:.1f}s)")
+        
+        try:
+            code, full_script = generate_adaptive_manim_code(
+                topic, 
+                level, 
+                script_data, 
+                audio_duration
+            )
+            
+            if not code:
+                update_job(job_id, status='failed', error='Failed to generate adaptive animations')
+                return
+            print(f"[JOB {job_id[:8]}] Adaptive Manim code generated: {len(code)} chars")
+        except Exception as code_error:
+            error_msg = str(code_error)[:500]
+            print(f"[JOB {job_id[:8]}] ERROR: Manim code generation failed: {error_msg}")
+            masked_error = mask_gemini_error(error_msg)
+            update_job(job_id, status='failed', error=f"Animation generation failed: {masked_error}")
+            return
+        
+        # STEP 5: Render video from adaptive code
+        update_job(job_id, status='processing', progress='Rendering video animations...')
+        print(f"[JOB {job_id[:8]}] STEP 5: Rendering video animations")
+        
+        try:
+            # Render video WITHOUT audio first (we'll combine them separately)
+            video_path = render_video(code, text_input=None)
+            
+            if not video_path or not os.path.exists(video_path):
+                update_job(job_id, status='failed', error='Video rendering failed')
+                return
+            print(f"[JOB {job_id[:8]}] Video rendered: {video_path}")
+        except Exception as render_error:
+            error_msg = str(render_error)[:500]
+            print(f"[JOB {job_id[:8]}] ERROR: Video rendering failed: {error_msg}")
+            masked_error = mask_gemini_error(error_msg)
+            update_job(job_id, status='failed', error=f"Video rendering failed: {masked_error}")
+            return
+        
+        # STEP 6: Combine pre-rendered audio with video
+        update_job(job_id, status='processing', progress='Combining audio and video...')
+        print(f"[JOB {job_id[:8]}] STEP 6: Combining audio and video")
+        
+        try:
+            from utils import combine_audio_video, copy_to_uploads
+            
+            final_video = combine_audio_video(video_path, audio_path)
+            print(f"[JOB {job_id[:8]}] Audio and video combined: {final_video}")
+            
+            # Clean up audio file
+            if audio_path and os.path.exists(audio_path):
+                try:
+                    os.unlink(audio_path)
+                    print(f"[JOB {job_id[:8]}] Cleaned up audio file")
+                except:
+                    pass
+            
+            # Copy to uploads folder
+            final_video = copy_to_uploads(final_video)
+            print(f"[JOB {job_id[:8]}] Copied to uploads: {final_video}")
+        except Exception as combine_error:
+            error_msg = str(combine_error)[:500]
+            print(f"[JOB {job_id[:8]}] WARNING: Audio-video combination failed: {error_msg}")
+            # If combination fails, still try to use the video
+            try:
+                from utils import copy_to_uploads
+                final_video = copy_to_uploads(video_path)
+                print(f"[JOB {job_id[:8]}] Using video without audio: {final_video}")
+            except:
+                update_job(job_id, status='failed', error='Failed to finalize video')
+                return
         
         # Find the uploaded video from uploads folder
         upload_filename = None
@@ -255,10 +365,8 @@ def process_job(job_id):
             video_url = f"/uploads/{upload_filename}"
             video_filename = upload_filename
         else:
-            video_filename = os.path.basename(video_path)
+            video_filename = os.path.basename(final_video)
             video_url = f"/videos/{video_filename}"
-        
-        video_title = topic[:47] + ('...' if len(topic) > 47 else '')
         
         # Update job as completed
         update_job(
@@ -266,15 +374,16 @@ def process_job(job_id):
             status='completed', 
             video_url=video_url,
             video_filename=video_filename,
-            subtitles=subtitles,
             progress='Completed!'
         )
         
-        print(f"[JOB {job_id[:8]}] Completed: {video_url}")
+        print(f"[JOB {job_id[:8]}] ✓ COMPLETED: {video_url}")
+        print(f"[JOB {job_id[:8]}] Workflow: Script → Audio → Adaptive Manim → Video → Combined")
         
     except Exception as e:
         error_msg = str(e)[:500]
-        print(f"[JOB {job_id[:8]}] Failed: {error_msg}")
+        print(f"[JOB {job_id[:8]}] ✗ FAILED: {error_msg}")
+        traceback.print_exc()
         # Mask Gemini API errors to hide technology stack
         masked_error = mask_gemini_error(error_msg)
         update_job(job_id, status='failed', error=masked_error, progress='Failed')
@@ -469,19 +578,29 @@ def auth_info():
 
 @app.route('/generate', methods=['POST'])
 def generate():
-    """Generate a new video from text input."""
+    """Generate a new video from text input with custom styling and parameters."""
     data = request.get_json()
     text_input = data.get('text', '').strip()
     level = data.get('level', 'basic')
+    style = data.get('style', 'animated')  # animated, minimal, mathematical, creative, technical, storytelling
+    duration = data.get('duration', 60)  # seconds, auto-adjusted to audio
+    colors = data.get('colors', None)  # custom color palette
+    objects = data.get('objects', None)  # custom visual elements
 
     print(f"\n{'='*50}")
     print(f"[GENERATE REQUEST]")
     print(f"Topic: '{text_input}'")
     print(f"Level: {level}")
+    print(f"Style: {style}")
+    print(f"Duration: {duration}s (will adjust to match audio)")
+    if colors:
+        print(f"Colors: {colors}")
+    if objects:
+        print(f"Objects: {objects}")
     print(f"{'='*50}\n")
 
     if not text_input:
-        return jsonify({'error': 'No text provided. Please enter a math topic.'}), 400
+        return jsonify({'error': 'No text provided. Please enter a topic.'}), 400
 
     if len(text_input) < 3:
         return jsonify({'error': 'Please provide a more detailed description.'}), 400
@@ -490,9 +609,16 @@ def generate():
         return jsonify({'error': 'Description is too long. Please keep it under 500 characters.'}), 400
 
     try:
-        # Generate Manim code, voice script, and subtitles using Gemini
+        # Generate Manim code, voice script, and subtitles using Gemini with custom parameters
         print(f"Generating Manim code for: {text_input}")
-        code, voice_script, subtitles = generate_manim_code(text_input, level)
+        code, voice_script, subtitles = generate_manim_code(
+            text_input, 
+            level=level,
+            style=style,
+            duration=duration,
+            colors=colors,
+            objects=objects
+        )
 
         if not code:
             return jsonify({'error': 'Failed to generate animation code. Please try a different topic.'}), 500
@@ -526,13 +652,16 @@ def generate():
         video_title = text_input[:47] + ('...' if len(text_input) > 47 else '')
 
         print(f"Video generated successfully: {video_filename}")
+        print(f"Style: {style}, Duration: ~{duration}s")
 
         # Return the video URL and subtitles
         return jsonify({
             'video_url': video_url, 
             'subtitles': subtitles,
             'title': video_title,
-            'level': level
+            'level': level,
+            'style': style,
+            'duration': duration
         })
 
     except Exception as e:

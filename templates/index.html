@@ -1204,19 +1204,27 @@
                                 <div class="loading-steps">
                                     <div class="loading-step active" id="step-1">
                                         <i class="fas fa-circle-notch fa-spin"></i>
-                                        <span>Generating video...</span>
+                                        <span>Generating audio script...</span>
                                     </div>
                                     <div class="loading-step" id="step-2">
                                         <i class="far fa-circle"></i>
-                                        <span>Rendering animation...</span>
+                                        <span>Rendering voice narration...</span>
                                     </div>
                                     <div class="loading-step" id="step-3">
                                         <i class="far fa-circle"></i>
-                                        <span>Adding voice narration...</span>
+                                        <span>Analyzing audio timing...</span>
                                     </div>
                                     <div class="loading-step" id="step-4">
                                         <i class="far fa-circle"></i>
-                                        <span>Finalizing video...</span>
+                                        <span>Generating adaptive animations...</span>
+                                    </div>
+                                    <div class="loading-step" id="step-5">
+                                        <i class="far fa-circle"></i>
+                                        <span>Rendering video animations...</span>
+                                    </div>
+                                    <div class="loading-step" id="step-6">
+                                        <i class="far fa-circle"></i>
+                                        <span>Combining audio and video...</span>
                                     </div>
                                 </div>
                             </div>
@@ -1466,10 +1474,12 @@
             updateLoadingStep(1);
 
             try {
-                // Simulate step progression
+                // Simulate step progression for 6-step audio-first workflow
                 setTimeout(() => updateLoadingStep(2), 3000);
                 setTimeout(() => updateLoadingStep(3), 8000);
                 setTimeout(() => updateLoadingStep(4), 15000);
+                setTimeout(() => updateLoadingStep(5), 25000);
+                setTimeout(() => updateLoadingStep(6), 35000);
 
                 const response = await fetch('/generate', {
                     method: 'POST',
@@ -1515,7 +1525,7 @@
 
         // Update loading step
         function updateLoadingStep(step) {
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const stepEl = document.getElementById(`step-${i}`);
                 if (i < step) {
                     stepEl.classList.remove('active');
@@ -1534,7 +1544,7 @@
 
         // Reset loading steps
         function resetLoadingSteps() {
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 6; i++) {
                 const stepEl = document.getElementById(`step-${i}`);
                 stepEl.classList.remove('active', 'completed');
                 stepEl.querySelector('i').className = i === 1 ? 'fas fa-circle-notch fa-spin' : 'far fa-circle';

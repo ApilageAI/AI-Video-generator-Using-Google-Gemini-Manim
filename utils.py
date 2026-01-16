@@ -209,10 +209,95 @@ def fix_manim_code_with_ai(code, error_message):
     return fixed_code
 
 
-def generate_manim_code(text_input, level="basic"):
+def _get_style_guide(style):
+    """
+    Returns style-specific design guidelines for video generation.
+    """
+    style_guides = {
+        "animated": """
+ANIMATED STYLE (Colorful, Lively, Engaging):
+- Use bright, vibrant colors with high saturation
+- Combine multiple animation types (Write, FadeIn, GrowFromCenter, Transform, Create, Indicate)
+- Add decorative elements: stars, circles, arrows, bouncing effects
+- Use smooth, flowing transitions between scenes
+- Include pulse effects and highlights (Indicate animation)
+- Create dynamic backgrounds with gradient effects
+- Use text animations with different styles
+- Add movement and energy throughout
+""",
+        "minimal": """
+MINIMAL STYLE (Clean, Simple, Professional):
+- Use grayscale or monochrome color scheme
+- Stick to basic animations (Write, FadeIn, FadeOut)
+- Single object per slide, clean layout
+- Use simple shapes and lines
+- No decorative elements or clutter
+- Professional, elegant transitions
+- Maximize white space
+- Focus on clarity over visual richness
+""",
+        "mathematical": """
+MATHEMATICAL STYLE (Precise, Analytical, Diagram-focused):
+- Use mathematical color conventions: blue for unknowns, red for errors/special, green for solutions
+- Include formulas, equations, and mathematical notation (MathTex)
+- Use axes, grids, graphs, and coordinate systems
+- Show step-by-step derivations using Transform
+- Include geometric diagrams and mathematical shapes
+- Use arrows for function mapping and transformations
+- Include proofs, theorems, and logical progressions
+- Precise positioning and alignment
+""",
+        "creative": """
+CREATIVE STYLE (Artistic, Imaginative, Visually Rich):
+- Use diverse, complementary color palettes
+- Combine unusual animations and transitions
+- Include artistic elements: gradients, patterns, textures
+- Use creative shapes and unconventional layouts
+- Add visual metaphors and symbolic representations
+- Mix animation types creatively
+- Include decorative flourishes and artistic touches
+- Tell a visual story, not just present information
+""",
+        "technical": """
+TECHNICAL STYLE (Structured, Code-focused, Diagram-heavy):
+- Use tech color scheme: dark backgrounds, bright accent colors
+- Include code blocks, syntax highlighting representations
+- Use flowcharts, diagrams, system architecture visuals
+- Show hierarchical relationships and data structures
+- Use boxes, connectors, and organizational elements
+- Include process flows and technical workflows
+- Use grid-based layouts
+- Precise, technical language and notation
+""",
+        "storytelling": """
+STORYTELLING STYLE (Narrative-driven, Scene-based, Character-focused):
+- Use warm, inviting color palettes
+- Create narrative scenes and scenarios
+- Include character elements or personas
+- Build suspense and reveal information gradually
+- Use scene transitions and chapter breaks
+- Create emotional engagement through visual narrative
+- Include settings, contexts, and environmental elements
+- Build to a climax or resolution
+"""
+    }
+    return style_guides.get(style, style_guides["animated"])
+
+
+def generate_manim_code(text_input, level="basic", style=None, duration=None, colors=None, objects=None):
     """
     Use Gemini to generate Manim Python code and a voice script based on the user's topic and level.
     Works for any educational topic: math, grammar, science, history, etc.
+    Supports custom styles, durations, colors, and objects for better user requirements matching.
+    
+    Args:
+        text_input: The topic/content to create a video for
+        level: Difficulty level (basic, intermediate, special_topic)
+        style: Video style (animated, minimal, mathematical, creative, technical, storytelling)
+        duration: Target video duration in seconds (auto-adjusted to match audio)
+        colors: Custom color palette (list of color names or hex codes)
+        objects: Custom visual elements to include (list of object types)
+    
     Returns a tuple: (manim_code, voice_script, subtitles)
     """
     level_descriptions = {
@@ -221,6 +306,34 @@ def generate_manim_code(text_input, level="basic"):
         "special_topic": "advanced concepts, complex relationships, in-depth analysis with sophisticated visualizations"
     }
     
+    # Default style parameters if not provided
+    style = style or "animated"  # animated, minimal, mathematical, creative, technical, storytelling
+    duration = duration or 60  # default 60 seconds, will adjust to audio
+    
+    # Set default color palettes based on style
+    if colors is None:
+        style_colors = {
+            "animated": ["GOLD", "BLUE_B", "GREEN_B", "PINK", "ORANGE", "TEAL_A", "YELLOW"],
+            "minimal": ["WHITE", "DARK_GRAY", "LIGHT_GRAY", "BLUE_E"],
+            "mathematical": ["BLUE_E", "WHITE", "YELLOW", "RED_B", "GREEN_B"],
+            "creative": ["PINK", "PURPLE_A", "GOLD", "TEAL_A", "RED_A"],
+            "technical": ["BLUE_B", "DARK_GRAY", "GREEN_B", "ORANGE"],
+            "storytelling": ["GOLD", "RED_B", "GREEN_A", "BLUE_A", "PURPLE_A"]
+        }
+        colors = style_colors.get(style, style_colors["animated"])
+    
+    # Set default visual objects based on style
+    if objects is None:
+        style_objects = {
+            "animated": ["boxes", "arrows", "circles", "stars", "icons"],
+            "minimal": ["text", "lines", "rectangles"],
+            "mathematical": ["formulas", "diagrams", "axes", "graphs"],
+            "creative": ["shapes", "gradients", "patterns", "decorative elements"],
+            "technical": ["diagrams", "code blocks", "flowcharts", "data structures"],
+            "storytelling": ["scenes", "characters", "transitions", "narrative elements"]
+        }
+        objects = style_objects.get(style, style_objects["animated"])
+    
     # Create a unique identifier for this request
     import time
     request_id = int(time.time() * 1000)
@@ -228,13 +341,17 @@ def generate_manim_code(text_input, level="basic"):
     prompt = f"""
     REQUEST ID: {request_id}
     
-    YOUR TASK: Create an engaging, colorful educational explainer video for THIS SPECIFIC TOPIC:
+    YOUR TASK: Create an engaging, custom-styled educational explainer video for THIS SPECIFIC TOPIC:
     
     ===== TOPIC =====
     {text_input}
     =================
     
-    Level: {level} ({level_descriptions[level]})
+    VIDEO STYLE: {style}
+    TARGET DURATION: {duration} seconds (will be adjusted to match audio narration)
+    CUSTOM COLORS: {', '.join(colors)}
+    VISUAL ELEMENTS: {', '.join(objects)}
+    DIFFICULTY LEVEL: {level} ({level_descriptions[level]})
     
     YOU MUST create content about "{text_input}" - not about any other topic.
     
@@ -248,16 +365,28 @@ def generate_manim_code(text_input, level="basic"):
     - MUST start with: from manim import *
     - Define a class named exactly 'MathExplanationScene' that inherits from Scene
     - Implement the construct method with beautiful, engaging animations
+    - MATCH the requested video style: {style}
+    - INCLUDE the specified visual elements: {', '.join(objects)}
+    - SYNC animation timing with narration (each section timed to speech)
+    - TARGET TOTAL VIDEO LENGTH: {duration} seconds (video will extend/compress to match audio)
     
-    ====== VISUAL DESIGN RULES (MAKE IT BEAUTIFUL!) ======
-    COLOR PALETTE - Use these consistently:
-    - TITLES: Use gradients or GOLD, BLUE_B, TEAL_A
-    - MAIN TEXT: WHITE or BLUE_A for readability
-    - HIGHLIGHTS: YELLOW, ORANGE, PINK for emphasis
-    - EXAMPLES: GREEN_B, GREEN_C for positive examples
-    - ERRORS/WRONG: RED_B, RED_C for negative examples
-    - BACKGROUNDS: Create colored rectangles behind text for emphasis
-    - Use at least 4-5 different colors throughout the video
+    ====== STYLE-SPECIFIC DESIGN RULES ======
+    
+    STYLE: {style.upper()}
+    {_get_style_guide(style)}
+    
+    ====== CUSTOM COLOR PALETTE (USE THESE!) ======
+    Your available colors: {', '.join(colors)}
+    - Use these colors EXCLUSIVELY throughout the video
+    - Apply colors to: titles, text, shapes, backgrounds, highlights
+    - Ensure good contrast for readability
+    - Use darker versions for backgrounds, brighter for emphasis
+    
+    ====== VISUAL ELEMENTS TO INCLUDE ======
+    Incorporate these elements: {', '.join(objects)}
+    - Adapt elements to fit your content naturally
+    - Use at least 3-4 different element types
+    - Each element should serve a purpose in explaining the concept
     
     SHAPES AND VISUAL AIDS:
     - Add colored BOXES (RoundedRectangle) around important concepts
@@ -366,33 +495,36 @@ def generate_manim_code(text_input, level="basic"):
     - Always use .scale(0.7) or .scale(0.8) on MathTex
     - Center formulas: .move_to(ORIGIN)
     
-    ====== VIDEO TIMING & SYNC (CRITICAL FOR AUDIO SYNC) ======
-    TOTAL DURATION: 50-70 seconds (match narration length)
+    ====== VIDEO TIMING & SYNC WITH AUDIO (CRITICAL!) ======
+    TARGET DURATION: {duration} seconds
+    ACTUAL VIDEO WILL EXTEND/COMPRESS TO MATCH AUDIO NARRATION LENGTH
     
-    TIMING BREAKDOWN:
-    - Title intro: 5 seconds (write + wait)
-    - Each content section: 8-10 seconds
-    - Each example: 6-8 seconds  
-    - Summary: 10-12 seconds
-    - Ending: 5 seconds
+    TIMING BREAKDOWN (scale these based on actual audio duration):
+    - Intro/Title: 5-8 seconds
+    - Each definition/explanation: 8-12 seconds
+    - Each example: 6-10 seconds
+    - Each comparison/transformation: 5-8 seconds
+    - Summary/Key points: 10-15 seconds
+    - Ending: 3-5 seconds
     
-    WAIT TIMES:
-    - After title: self.wait(2)
-    - After definition/explanation: self.wait(3)
-    - After each example: self.wait(4)
-    - After bullet points: self.wait(2) each
-    - Before ending: self.wait(2)
+    SYNCHRONIZATION RULES:
+    1. READ the voice script carefully to match animation timing
+    2. Each animation should complete before the next sentence is narrated
+    3. Use wait times to allow narration to complete
+    4. No animation should be rushed - minimum 0.5s per animation
+    5. Total wait time should equal total narration duration
     
-    ANIMATION DURATIONS:
-    - Write animations: run_time=1.5 to run_time=2
-    - FadeIn/FadeOut: run_time=0.8 to run_time=1
-    - Transform: run_time=1 to run_time=1.5
-    - DO NOT use fast animations (run_time < 0.5)
+    ANIMATION TIMING FORMULA:
+    - Intro animation (2-3s) + narration pause (2s) = 4-5s
+    - Show content (1-2s) + explanation time (6-8s) = 7-10s
+    - Transform animation (1-1.5s) + new content time (3-5s) = 4-6.5s
     
-    SYNC PRINCIPLE:
-    - Narration describes what's on screen
-    - Each spoken sentence = one visual element shown
-    - Wait times allow narration to complete before transition
+    WAIT TIME STRATEGY:
+    - After title intro: wait 2-3 seconds
+    - After each explanation: wait 2-4 seconds (lets narration finish)
+    - After examples: wait 3-5 seconds
+    - Between sections: wait 0.3-0.5 seconds for clean transitions
+    - Before ending: wait 2 seconds
     
     ====== MANDATORY ENDING SEQUENCE ======
     At the VERY END, you MUST add this exact ending:
@@ -583,28 +715,40 @@ def generate_manim_code(text_input, level="basic"):
     - Highlight: SurroundingRectangle(mobject, color=YELLOW, buff=0.2)
     - Brace: Brace(mobject, direction=DOWN, color=WHITE)
 
-    2. A VOICE SCRIPT (SPOKEN NARRATION ONLY):
+    2. A VOICE SCRIPT (SPOKEN NARRATION WITH TIMING CUES):
     - Write ONLY the words to be spoken aloud - NO timestamps
     - Write natural, conversational narration that matches the video EXACTLY
     - Each visual element should have corresponding narration
-    - Duration: 50-70 seconds of speaking to match video length
+    - CRITICAL: Match narration speed to animation duration
+    - Add [PAUSE] markers where animations happen without speech
     - Use clear transitions: "Now let's look at..." "Here's an example..." "To summarize..."
+    - Calculate duration: Average speaking is ~150 words per minute, adjust narration length accordingly
     - End with: "This video was created by Apilage AI."
     
-    VOICE SCRIPT EXAMPLE:
-    "Welcome to this lesson on [topic]. Let's explore what [topic] means and how it works. 
-    [Topic] is defined as [definition]. This is important because [reason].
-    Let's look at our first example. [Explain example 1 in detail].
-    Here's another example. [Explain example 2].
-    For our third example, notice how [explain transformation or comparison].
-    Let's summarize the key points. First, [point 1]. Second, [point 2]. And third, [point 3].
-    Now you understand [topic]. Practice with more examples to master this concept.
-    This video was created by Apilage AI."
+    VOICE SCRIPT GUIDELINES FOR TIMING:
+    - Count your words and estimate duration (words ÷ 2.5 = seconds for normal speech)
+    - For 60 second video: aim for 150 words of narration
+    - Include [PAUSE 2s] or [PAUSE 3s] for animations without speech
+    - Each sentence should take 2-4 seconds to speak
+    - Leave space between sections for visual transitions
+    
+    ENHANCED VOICE SCRIPT EXAMPLE:
+    "Welcome to this lesson on [topic]. [PAUSE 1s] 
+    Let's explore what [topic] means and how it works. 
+    [Topic] is defined as [definition]. This is important because [reason]. [PAUSE 2s]
+    Let's look at our first example. [Explain example 1 in detail]. [PAUSE 1s]
+    Here's another example. [Explain example 2]. [PAUSE 2s]
+    For our third example, notice how [explain transformation]. [PAUSE 1s]
+    Let's summarize the key points. [PAUSE 1s]
+    First, [point 1]. Second, [point 2]. And third, [point 3]. [PAUSE 2s]
+    Now you understand [topic]. Practice with more examples.
+    This video was created by Apilage AI. [PAUSE 2s]"
 
     3. SUBTITLES (WebVTT format):
-    - Break narration into 3-4 second segments
-    - Include proper WebVTT timing that matches video pacing
+    - Break narration into segments matching video pacing (3-5 second chunks)
+    - Include proper WebVTT timing that aligns with voice and animations
     - Start with "WEBVTT" header
+    - Synchronize with animation transitions
 
     Format your response EXACTLY as:
     MANIM_CODE:
@@ -613,12 +757,17 @@ def generate_manim_code(text_input, level="basic"):
     ```
 
     VOICE_SCRIPT:
-    [Natural spoken narration here - NO timestamps]
+    [Natural spoken narration with [PAUSE] markers]
 
     SUBTITLES:
     [WebVTT subtitle content here]
     
-    IMPORTANT: Generate UNIQUE content for "{text_input}". Make it visually engaging with colors and shapes!
+    IMPORTANT: 
+    1. Generate UNIQUE content for "{text_input}"
+    2. Make it visually engaging with custom style: {style}
+    3. Use custom colors and objects matching user requirements
+    4. Ensure audio-video sync by matching animation timing to narration
+    5. Adjust total video duration to match narration length
     """
 
     print(f"[DEBUG] Generating content for topic: '{text_input}' at {level} level")
@@ -1288,3 +1437,265 @@ def combine_audio_video(video_path, audio_path):
             print(f"[COMBINE] Alternative command also failed: {alt_error}")
         
         return video_path
+
+# ============== NEW AUDIO-FIRST WORKFLOW FUNCTIONS ==============
+
+def generate_audio_script_with_timing(topic, level="basic", style=None):
+    """
+    Generate an audio script with timing information BEFORE creating manim code.
+    This is the first step in the new audio-first workflow.
+    
+    Args:
+        topic: The topic to create educational content about
+        level: Difficulty level (basic, intermediate, special_topic)
+        style: Video style (animated, minimal, mathematical, creative, technical, storytelling)
+    
+    Returns:
+        Dictionary with: {
+            'script': Full narration text,
+            'segments': List of segments with timing and descriptions,
+            'total_duration_estimate': Estimated duration in seconds,
+            'voice_type': Recommended voice characteristics
+        }
+    """
+    style = style or "animated"
+    
+    level_descriptions = {
+        "basic": "fundamental concepts, simple explanations, basic terminology, suitable for beginners",
+        "intermediate": "detailed explanations with diagrams, relationships between concepts",
+        "special_topic": "advanced concepts, complex relationships, in-depth analysis"
+    }
+    
+    prompt = f"""
+    You are an expert educational content writer and video scriptwriter.
+    
+    Create a STRUCTURED, NARRATION-FOCUSED script for an educational video about:
+    TOPIC: {topic}
+    DIFFICULTY: {level} ({level_descriptions[level]})
+    STYLE: {style}
+    
+    CRITICAL: This script will be narrated by voice. Structure it for NATURAL SPEECH TIMING.
+    
+    Return ONLY a JSON response with this exact structure (no markdown, pure JSON):
+    {{
+        "script": "Full narration text (60-90 seconds of speech at normal pace, about 150-225 words)",
+        "segments": [
+            {{
+                "time_start": 0,
+                "duration": 5,
+                "type": "title",
+                "description": "Short title/hook",
+                "visual_description": "What to show visually"
+            }},
+            {{
+                "time_start": 5,
+                "duration": 15,
+                "type": "definition",
+                "description": "Main concept explanation",
+                "visual_description": "Visual elements and animations"
+            }},
+            {{
+                "time_start": 20,
+                "duration": 30,
+                "type": "examples",
+                "description": "Examples and applications",
+                "visual_description": "How to visualize examples"
+            }},
+            {{
+                "time_start": 50,
+                "duration": 20,
+                "type": "summary",
+                "description": "Key takeaways",
+                "visual_description": "Summary visual"
+            }},
+            {{
+                "time_start": 70,
+                "duration": 8,
+                "type": "outro",
+                "description": "Closing statement",
+                "visual_description": "Ending animation"
+            }}
+        ],
+        "total_duration_estimate": 78,
+        "words_count": 195,
+        "voice_type": "Clear, professional, engaging (like Kore)",
+        "pace": "Normal - about 130-150 words per minute"
+    }}
+    
+    RULES:
+    1. Script should be natural, conversational, and easy to narrate
+    2. Each segment duration should align with narration content
+    3. Total duration: 50-90 seconds (will be adjusted based on actual audio)
+    4. Include pauses in descriptions where narration pauses
+    5. Segments must cover: intro → explanation → examples → summary → outro
+    6. All durations in seconds
+    """
+    
+    try:
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+        response_text = response.text.strip()
+        
+        # Extract JSON from response
+        import json
+        script_data = json.loads(response_text)
+        
+        print(f"[AUDIO-SCRIPT] Generated script: {script_data.get('words_count', 0)} words, "
+              f"{script_data.get('total_duration_estimate', 0)}s estimated")
+        
+        return script_data
+        
+    except json.JSONDecodeError as e:
+        print(f"[AUDIO-SCRIPT] JSON parsing error: {e}")
+        raise Exception(f"Failed to parse script data: {e}")
+    except Exception as e:
+        print(f"[AUDIO-SCRIPT] Error: {e}")
+        raise
+
+
+def get_audio_timing_info(audio_path):
+    """
+    Analyze audio file to get timing information.
+    Returns duration and suggests segment breaks.
+    
+    Args:
+        audio_path: Path to the audio file
+    
+    Returns:
+        Dictionary with audio timing info: {
+            'duration': Total duration in seconds,
+            'suggested_segments': List of recommended segment boundaries
+        }
+    """
+    try:
+        duration = get_audio_duration(audio_path)
+        
+        # Suggest segment breaks based on duration
+        suggested_segments = []
+        if duration > 0:
+            # Rough segments for typical structure
+            suggested_segments = [
+                {'time': 0, 'type': 'intro'},
+                {'time': duration * 0.15, 'type': 'definition'},
+                {'time': duration * 0.4, 'type': 'examples'},
+                {'time': duration * 0.85, 'type': 'summary'},
+                {'time': duration * 0.95, 'type': 'outro'},
+                {'time': duration, 'type': 'end'}
+            ]
+        
+        return {
+            'duration': duration,
+            'suggested_segments': suggested_segments
+        }
+    except Exception as e:
+        print(f"[AUDIO-TIMING] Error getting audio timing: {e}")
+        raise
+
+
+def generate_adaptive_manim_code(topic, level, script_data, audio_duration, style=None):
+    """
+    Generate Manim code that adapts to actual audio script and duration.
+    This replaces the old generate_manim_code flow.
+    
+    Args:
+        topic: The educational topic
+        level: Difficulty level
+        script_data: Output from generate_audio_script_with_timing()
+        audio_duration: Actual duration of rendered audio in seconds
+        style: Video style
+    
+    Returns:
+        Tuple: (manim_code, full_script)
+    """
+    style = style or "animated"
+    
+    # Build segment information from script
+    segments_info = ""
+    for seg in script_data.get('segments', []):
+        # Adjust segment durations proportionally to actual audio duration
+        estimated_total = script_data.get('total_duration_estimate', 70)
+        scale_factor = audio_duration / estimated_total if estimated_total > 0 else 1.0
+        
+        actual_duration = seg.get('duration', 0) * scale_factor
+        
+        segments_info += f"\n- [{seg['type']}] {seg['description']} ({actual_duration:.1f}s): {seg['visual_description']}"
+    
+    full_script = script_data.get('script', '')
+    
+    prompt = f"""
+    You are an expert Manim animation developer.
+    
+    Create a Manim Python video animation that EXACTLY matches this audio-first specification:
+    
+    TOPIC: {topic}
+    LEVEL: {level}
+    STYLE: {style}
+    ACTUAL AUDIO DURATION: {audio_duration:.1f} seconds
+    
+    NARRATION SCRIPT:
+    {full_script}
+    
+    SEGMENT BREAKDOWN (MUST FOLLOW THESE TIMINGS):
+    {segments_info}
+    
+    CRITICAL SYNCHRONIZATION REQUIREMENTS:
+    1. Total animation duration MUST be {audio_duration:.1f} seconds (will be extended/compressed to match)
+    2. Each animation segment MUST align with corresponding narration
+    3. Use self.wait() times to sync with speech pauses
+    4. No animation should overlap with speech in adjacent segments
+    5. Animations should complete BEFORE the next sentence
+    
+    ANIMATION STRUCTURE (adjust durations proportionally):
+    - Intro animation: 1-2 seconds
+    - Each explanation/example: varies by segment duration
+    - Transitions between sections: 0.5 seconds
+    - Final outro: 2-3 seconds
+    - TOTAL: Exactly {audio_duration:.1f} seconds
+    
+    ===== STYLE GUIDELINES =====
+    {_get_style_guide(style)}
+    
+    ===== STRICT REQUIREMENTS =====
+    1. Must start with: from manim import *
+    2. Class name MUST be: MathExplanationScene(Scene)
+    3. Implement: def construct(self):
+    4. Use self.wait() times that sum to {audio_duration:.1f} seconds
+    5. Fade out all objects before creating new ones (prevent overlap)
+    6. Match animations to narration timing
+    7. Don't use fixed video template - adapt to content and audio length
+    
+    DURATION ALLOCATION (scale these to {audio_duration:.1f} seconds total):
+    - Intro: {max(2, audio_duration * 0.08):.1f}s
+    - Main content: {max(10, audio_duration * 0.75):.1f}s  
+    - Summary: {max(4, audio_duration * 0.12):.1f}s
+    - Ending: {max(2, audio_duration * 0.05):.1f}s
+    
+    MANDATORY ENDING:
+    ```python
+    self.play(*[FadeOut(mob) for mob in self.mobjects])
+    self.wait(0.5)
+    ending_bg = Rectangle(width=14, height=8, fill_color=BLUE_E, fill_opacity=0.5)
+    ending_text = Text("Apilage AI Video", font_size=48, color=GOLD)
+    ending_text.move_to(ORIGIN)
+    self.play(FadeIn(ending_bg), run_time=0.5)
+    self.play(SpinInFromNothing(ending_text), run_time=1.5)
+    self.wait(2.5)
+    self.play(FadeOut(ending_text), FadeOut(ending_bg))
+    self.wait(0.5)
+    ```
+    
+    Return ONLY the Python code, no explanations.
+    """
+    
+    try:
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+        code = sanitize_manim_code(response.text.strip())
+        
+        print(f"[ADAPTIVE-MANIM] Generated adaptive manim code ({len(code)} chars)")
+        
+        return code, full_script
+        
+    except Exception as e:
+        print(f"[ADAPTIVE-MANIM] Error: {e}")
+        raise
