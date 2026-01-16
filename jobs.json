@@ -68,5 +68,126 @@
     "progress": "Completed!",
     "video_filename": "MathExplanationScene_20251212_220123.mp4",
     "subtitles": "```webvtt\nWEBVTT\n\n00:00.000 --> 00:05.000\nWelcome to this lesson on understanding gravity.\nLet's explore what gravity means and how it works.\n\n00:05.000 --> 00:13.000\nGravity is defined as a force that attracts objects with mass toward each other.\n\n00:13.000 --> 00:17.000\nNow let's look at our first example: an apple falling.\n\n00:17.000 --> 00:20.000\nGravity pulls the apple downwards.\n\n00:20.000 --> 00:25.000\nHere's another example: planets orbiting the sun.\n\n00:25.000 --> 00:29.000\nGravity keeps the planets in their orbits around the sun.\n\n00:29.000 --> 00:34.000\nFor our third example, consider ocean tides.\nThe moon's gravity causes tides on Earth.\n\n00:34.000 --> 00:43.000\nLet's summarize the key points. First, gravity attracts objects with mass.\nSecond, gravity determines planetary orbits. And third, gravity causes tides on Earth.\n\n00:43.000 --> 00:45.000\nNow you understand gravity.\n\n00:45.000 --> 00:47.000\nThis video was created by Apilage AI.\n```"
+  },
+  "16f1fdb9-3c47-4b92-89b6-4d551228a042": {
+    "id": "16f1fdb9-3c47-4b92-89b6-4d551228a042",
+    "topic": "Explain me past perfect tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T13:52:56.617997",
+    "updated_at": "2026-01-16T13:53:19.930289",
+    "video_url": null,
+    "error": "Video rendering failed at segment 1: Command '['manim', '/var/folders/jr/dz7p762j76x8k7p8sssw75bw0000gn/T/tmp3q0qe9vz.py', 'MathExplanationScene', '-ql', '--media_dir', 'media']' returned non-zero exit status 1.",
+    "progress": "Rendering video 1/8..."
+  },
+  "b34b5f29-b8f3-422d-8a54-ee2c22098b9d": {
+    "id": "b34b5f29-b8f3-422d-8a54-ee2c22098b9d",
+    "topic": "Explain me past perfect tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T13:55:18.710872",
+    "updated_at": "2026-01-16T13:55:38.143499",
+    "video_url": null,
+    "error": "Video rendering failed at segment 1: Command '['manim', '/var/folders/jr/dz7p762j76x8k7p8sssw75bw0000gn/T/tmpth5egf38.py', 'MathExplanationScene', '-ql', '--media_dir', 'media']' returned non-zero exit status 1.",
+    "progress": "Rendering video 1/8..."
+  },
+  "0de7b10e-a92f-4ef1-8fc3-a1522c52a7d3": {
+    "id": "0de7b10e-a92f-4ef1-8fc3-a1522c52a7d3",
+    "topic": "explain me past perfect tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:04:40.504360",
+    "updated_at": "2026-01-16T14:05:05.525891",
+    "video_url": null,
+    "error": "Video rendering failed at segment 1: Command '['manim', '/var/folders/jr/dz7p762j76x8k7p8sssw75bw0000gn/T/tmp_ck7j9sz.py', 'MathExplanationScene', '-ql', '--media_dir', 'media']' returned non-zero exit status 1.",
+    "progress": "Rendering video 1/8..."
+  },
+  "ce0216cd-38d4-4e24-a874-8a5b60733304": {
+    "id": "ce0216cd-38d4-4e24-a874-8a5b60733304",
+    "topic": "explain me past perfect tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:08:39.335324",
+    "updated_at": "2026-01-16T14:09:26.375146",
+    "video_url": null,
+    "error": "Video rendering failed at segment 1: Command '['manim', '/var/folders/jr/dz7p762j76x8k7p8sssw75bw0000gn/T/tmp4_bj1m_v.py', 'MathExplanationScene', '-ql', '--media_dir', 'media']' returned non-zero exit status 1.",
+    "progress": "Rendering video 1/6..."
+  },
+  "f3dc0c9f-5e52-41bd-a2c7-ac5c57e45a77": {
+    "id": "f3dc0c9f-5e52-41bd-a2c7-ac5c57e45a77",
+    "topic": "Explain me past perfet tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:38:59.953182",
+    "updated_at": "2026-01-16T14:39:01.325529",
+    "video_url": null,
+    "error": "local variable 'json' referenced before assignment",
+    "progress": "Generating audio script with timeframes..."
+  },
+  "aa3d04bd-b043-412a-ac33-0bd400600dde": {
+    "id": "aa3d04bd-b043-412a-ac33-0bd400600dde",
+    "topic": "Explain me past perfet tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:44:56.631359",
+    "updated_at": "2026-01-16T14:44:56.669199",
+    "video_url": null,
+    "error": "local variable 'json' referenced before assignment",
+    "progress": "Generating audio script with timeframes..."
+  },
+  "69a2c1e1-dfe9-4b20-b7c8-1146316d3fb5": {
+    "id": "69a2c1e1-dfe9-4b20-b7c8-1146316d3fb5",
+    "topic": "Explain me past perfet tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:47:39.778512",
+    "updated_at": "2026-01-16T14:47:39.803274",
+    "video_url": null,
+    "error": "local variable 'json' referenced before assignment",
+    "progress": "Generating audio script with timeframes..."
+  },
+  "0f8590ab-337f-41e2-977e-602f8a4cbeda": {
+    "id": "0f8590ab-337f-41e2-977e-602f8a4cbeda",
+    "topic": "Explain me past perfet tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:51:48.160437",
+    "updated_at": "2026-01-16T14:51:48.191740",
+    "video_url": null,
+    "error": "Error from apilageai.lk reach them at contact@apilageai.lk",
+    "progress": "Generating audio script with timeframes..."
+  },
+  "2234475f-4e1f-4a80-b1c6-57ce42ecb406": {
+    "id": "2234475f-4e1f-4a80-b1c6-57ce42ecb406",
+    "topic": "Explain me past perfet tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:55:17.976977",
+    "updated_at": "2026-01-16T14:55:19.261572",
+    "video_url": null,
+    "error": "Error from apilageai.lk reach them at contact@apilageai.lk",
+    "progress": "Generating audio script with timeframes..."
+  },
+  "b84eba5a-e404-45eb-9d8b-fa0a1b028aba": {
+    "id": "b84eba5a-e404-45eb-9d8b-fa0a1b028aba",
+    "topic": "Explain me past perfet tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T14:56:44.783147",
+    "updated_at": "2026-01-16T14:56:46.012472",
+    "video_url": null,
+    "error": "Error from apilageai.lk reach them at contact@apilageai.lk",
+    "progress": "Generating audio script with timeframes..."
+  },
+  "dc447da9-285a-439f-aa92-ee6328249eba": {
+    "id": "dc447da9-285a-439f-aa92-ee6328249eba",
+    "topic": "explain me past perfect tenses",
+    "status": "failed",
+    "queue_position": 1,
+    "created_at": "2026-01-16T15:00:50.589954",
+    "updated_at": "2026-01-16T15:04:05.140798",
+    "video_url": null,
+    "error": "Video rendering failed at segment 2: Video rendering failed at segment 1: \nkpathsea: Running mktexfmt latex.fmt\nCan't locate mktexlsr.pl in @INC (@INC contains: /opt/anaconda3/share/tlpkg /opt/anaconda3/share/texmf-dist/scripts/texlive /Library/Perl/5.34/darwin-thread-multi",
+    "progress": "Rendering video 2/8..."
   }
 }
