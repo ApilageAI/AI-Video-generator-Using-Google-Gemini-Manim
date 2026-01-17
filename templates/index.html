@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>apilageai-VID - AI Video Generator</title>
+    <title>ManimGen AI - Math Video Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-tertiary: #f0f2f5;
-            --bg-card: #ffffff;
-            --accent-primary: #3b82f6;
-            --accent-secondary: #2563eb;
-            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            --border-color: #e5e7eb;
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --bg-card: rgba(26, 26, 46, 0.8);
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: rgba(99, 102, 241, 0.2);
             --success: #10b981;
             --error: #ef4444;
             --warning: #f59e0b;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.3);
         }
 
         * {
@@ -52,7 +52,6 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
 
         .bg-animation::before {
@@ -62,9 +61,9 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(29, 78, 216, 0.03) 0%, transparent 40%);
+            background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
             animation: bgFloat 20s ease-in-out infinite;
         }
 
@@ -84,7 +83,8 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
             border-right: 1px solid var(--border-color);
             padding: 24px 0;
             position: fixed;
@@ -92,7 +92,6 @@
             overflow-y: auto;
             z-index: 100;
             transition: transform 0.3s ease;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
         }
 
         .sidebar-header {
@@ -198,15 +197,13 @@
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
             padding: 20px 32px;
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 50;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
 
         .header-content {
@@ -224,26 +221,23 @@
 
         .search-input {
             width: 100%;
-            padding: 12px 18px 12px 48px;
+            padding: 14px 20px 14px 50px;
             background: var(--bg-secondary);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
             color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 400;
+            font-size: 15px;
             transition: all 0.3s ease;
         }
 
         .search-input::placeholder {
             color: var(--text-muted);
-            font-weight: 400;
         }
 
         .search-input:focus {
             outline: none;
             border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .search-icon {
@@ -265,21 +259,19 @@
             height: 44px;
             border-radius: 12px;
             background: var(--bg-secondary);
-            border: 1.5px solid var(--border-color);
+            border: 1px solid var(--border-color);
             color: var(--text-secondary);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
-            font-size: 16px;
         }
 
         .header-btn:hover {
             background: var(--accent-primary);
             border-color: var(--accent-primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
         }
 
         /* Content Area */
@@ -310,36 +302,28 @@
         }
 
         .page-title {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -0.5px;
         }
 
         .page-subtitle {
             color: var(--text-secondary);
             font-size: 16px;
-            margin-bottom: 36px;
-            font-weight: 400;
-            line-height: 1.6;
+            margin-bottom: 32px;
         }
 
         .creator-card {
-            padding: 40px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-        }
-
-        .creator-card:hover {
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
-            border-color: rgba(59, 130, 246, 0.2der-color);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 40px;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
         }
 
         .input-group {
@@ -368,28 +352,25 @@
         textarea {
             width: 100%;
             height: 140px;
-            padding: 16px 18px;
+            padding: 18px;
             background: var(--bg-secondary);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             color: var(--text-primary);
             font-size: 15px;
             font-family: inherit;
-            font-weight: 400;
             resize: vertical;
             transition: all 0.3s ease;
         }
 
         textarea::placeholder {
             color: var(--text-muted);
-            font-weight: 400;
         }
 
         textarea:focus {
             outline: none;
             border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .select-wrapper {
@@ -412,12 +393,11 @@
             width: 100%;
             padding: 16px 18px;
             background: var(--bg-secondary);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
             color: var(--text-primary);
             font-size: 15px;
             font-family: inherit;
-            font-weight: 400;
             cursor: pointer;
             appearance: none;
             transition: all 0.3s ease;
@@ -426,8 +406,7 @@
         select:focus {
             outline: none;
             border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .generate-btn {
@@ -435,7 +414,7 @@
             padding: 18px 32px;
             background: var(--accent-gradient);
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-size: 16px;
             font-weight: 600;
@@ -445,21 +424,16 @@
             justify-content: center;
             gap: 12px;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
-            letter-spacing: 0.3px;
+            box-shadow: var(--shadow-glow);
         }
 
         .generate-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
-        }
-
-        .generate-btn:active:not(:disabled) {
-            transform: translateY(0px);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
         }
 
         .generate-btn:disabled {
-            opacity: 0.65;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
@@ -604,18 +578,18 @@
         }
 
         .video-card {
-            background: #ffffff;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             overflow: hidden;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: var(--shadow-sm);
         }
 
         .video-card:hover {
             transform: translateY(-8px);
-            box-shadow: var(--shadow-md), var(--shadow-glow);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
             border-color: var(--accent-primary);
         }
 
@@ -724,7 +698,7 @@
         .empty-state {
             text-align: center;
             padding: 80px 40px;
-            background: #ffffff;
+            background: var(--bg-card);
             border: 1px dashed var(--border-color);
             border-radius: 24px;
         }
@@ -885,7 +859,7 @@
 
         .modal-sidebar {
             width: 400px;
-            background: #ffffff;
+            background: var(--bg-card);
             border-left: 1px solid var(--border-color);
             overflow-y: auto;
             padding: 24px;
@@ -1065,7 +1039,7 @@
             bottom: 24px;
             right: 24px;
             padding: 16px 24px;
-            background: #ffffff;
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             display: flex;
@@ -1111,7 +1085,7 @@
                     <div class="logo-icon">
                         <i class="fas fa-play"></i>
                     </div>
-                    <span class="logo-text">apilageai-VID</span>
+                    <span class="logo-text">ManimGen</span>
                 </div>
             </div>
 
@@ -1128,7 +1102,17 @@
                 </div>
             </nav>
 
-
+            <nav class="nav-section">
+                <div class="nav-title">Resources</div>
+                <div class="nav-item" onclick="window.open('https://docs.manim.community/', '_blank')">
+                    <i class="fas fa-book"></i>
+                    <span>Documentation</span>
+                </div>
+                <div class="nav-item" onclick="window.open('https://github.com/ManimCommunity/manim', '_blank')">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </div>
+            </nav>
         </aside>
 
         <!-- Main Content -->
@@ -1177,21 +1161,6 @@
 • Basic programming loops explained"></textarea>
                             </div>
 
-                            <div class="input-group">
-                                <label class="input-label">
-                                    <i class="fas fa-signal"></i>
-                                    Difficulty Level
-                                </label>
-                                <p class="input-hint">Choose the complexity of the explanation</p>
-                                <div class="select-wrapper">
-                                    <select id="level-select">
-                                        <option value="basic">🌱 Basic - Fundamental concepts</option>
-                                        <option value="intermediate">📚 Intermediate - Detailed explanations</option>
-                                        <option value="special_topic">🎓 Advanced - In-depth analysis</option>
-                                    </select>
-                                </div>
-                            </div>
-
                             <button class="generate-btn" id="generate-btn" onclick="generateVideo()">
                                 <i class="fas fa-magic"></i>
                                 Generate Video
@@ -1204,27 +1173,19 @@
                                 <div class="loading-steps">
                                     <div class="loading-step active" id="step-1">
                                         <i class="fas fa-circle-notch fa-spin"></i>
-                                        <span>Generating audio script...</span>
+                                        <span>Generating Manim code...</span>
                                     </div>
                                     <div class="loading-step" id="step-2">
                                         <i class="far fa-circle"></i>
-                                        <span>Rendering voice narration...</span>
+                                        <span>Rendering animation...</span>
                                     </div>
                                     <div class="loading-step" id="step-3">
                                         <i class="far fa-circle"></i>
-                                        <span>Analyzing audio timing...</span>
+                                        <span>Adding voice narration...</span>
                                     </div>
                                     <div class="loading-step" id="step-4">
                                         <i class="far fa-circle"></i>
-                                        <span>Generating adaptive animations...</span>
-                                    </div>
-                                    <div class="loading-step" id="step-5">
-                                        <i class="far fa-circle"></i>
-                                        <span>Rendering video animations...</span>
-                                    </div>
-                                    <div class="loading-step" id="step-6">
-                                        <i class="far fa-circle"></i>
-                                        <span>Combining audio and video...</span>
+                                        <span>Finalizing video...</span>
                                     </div>
                                 </div>
                             </div>
@@ -1363,7 +1324,7 @@
         // Load Videos
         async function loadVideos() {
             try {
-                const response = await fetch('/videos');
+                const response = await fetch('/videos', { cache: 'no-store' });
                 if (response.ok) {
                     videos = await response.json();
                     displayVideos();
@@ -1411,25 +1372,9 @@
                     </div>
                     <div class="video-info">
                         <h3 class="video-title">${escapeHtml(video.title)}</h3>
-                        <div class="video-meta">
-                            <span class="video-level">
-                                <i class="fas fa-signal"></i>
-                                ${formatLevel(video.level)}
-                            </span>
-                        </div>
                     </div>
                 </div>
             `).join('');
-        }
-
-        // Format level text
-        function formatLevel(level) {
-            const levels = {
-                'basic': 'Basic',
-                'intermediate': 'Intermediate',
-                'special_topic': 'Advanced'
-            };
-            return levels[level] || level;
         }
 
         // Escape HTML to prevent XSS
@@ -1449,14 +1394,13 @@
             if (isLoading) return;
 
             const textInput = document.getElementById('text-input').value.trim();
-            const level = document.getElementById('level-select').value;
             const generateBtn = document.getElementById('generate-btn');
             const loading = document.getElementById('loading');
             const errorMessage = document.getElementById('error-message');
             const successMessage = document.getElementById('success-message');
 
             if (!textInput) {
-                showToast('Please enter a math topic', 'error');
+                showToast('Please enter a topic', 'error');
                 return;
             }
 
@@ -1474,17 +1418,16 @@
             updateLoadingStep(1);
 
             try {
-                // Simulate step progression for 6-step audio-first workflow
+                // Simulate step progression
                 setTimeout(() => updateLoadingStep(2), 3000);
                 setTimeout(() => updateLoadingStep(3), 8000);
                 setTimeout(() => updateLoadingStep(4), 15000);
-                setTimeout(() => updateLoadingStep(5), 25000);
-                setTimeout(() => updateLoadingStep(6), 35000);
 
                 const response = await fetch('/generate', {
                     method: 'POST',
+                    cache: 'no-store',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: textInput, level: level })
+                    body: JSON.stringify({ text: textInput })
                 });
 
                 const data = await response.json();
@@ -1493,6 +1436,18 @@
                     // Success
                     successMessage.classList.add('active');
                     showToast('Video generated successfully!', 'success');
+
+                    // Optimistic UI update (show the just-generated video immediately)
+                    if (data && data.video_url) {
+                        videos.unshift({
+                            title: data.title || textInput,
+                            url: data.video_url,
+                            filename: (data.video_url.split('/').pop() || ''),
+                            created: new Date().toISOString()
+                        });
+                        displayVideos();
+                        updateVideoCount();
+                    }
 
                     // Clear input
                     document.getElementById('text-input').value = '';
@@ -1525,7 +1480,7 @@
 
         // Update loading step
         function updateLoadingStep(step) {
-            for (let i = 1; i <= 6; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const stepEl = document.getElementById(`step-${i}`);
                 if (i < step) {
                     stepEl.classList.remove('active');
@@ -1544,7 +1499,7 @@
 
         // Reset loading steps
         function resetLoadingSteps() {
-            for (let i = 1; i <= 6; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const stepEl = document.getElementById(`step-${i}`);
                 stepEl.classList.remove('active', 'completed');
                 stepEl.querySelector('i').className = i === 1 ? 'fas fa-circle-notch fa-spin' : 'far fa-circle';
@@ -1593,7 +1548,6 @@
                         </div>
                         <div class="related-info">
                             <h4 class="related-title">${escapeHtml(video.title)}</h4>
-                            <p class="related-meta">${formatLevel(video.level)}</p>
                         </div>
                     </div>
                 `;

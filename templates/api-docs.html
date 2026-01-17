@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>apilageai-VID API - Documentation</title>
+    <title>Apilage AI Video API - Documentation</title>
     <style>
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-card: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --accent: #3b82f6;
-            --accent-light: #2563eb;
-            --success: #10b981;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --success: #22c55e;
             --warning: #f59e0b;
             --error: #ef4444;
-            --code-bg: #f3f4f6;
-            --border: #e5e7eb;
+            --code-bg: #0d0d12;
+            --border: #2a2a35;
         }
 
         * {
@@ -31,7 +31,6 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
-            padding: 2rem 0;
         }
 
         .container {
@@ -42,28 +41,18 @@
 
         header {
             text-align: center;
-            padding: 4rem 0;
+            padding: 3rem 0;
             border-bottom: 1px solid var(--border);
             margin-bottom: 3rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
 
         h1 {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
             background: linear-gradient(135deg, var(--accent), var(--accent-light));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        header p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin: 0;
-            font-weight: 400;
         }
 
         h2 {
@@ -100,15 +89,8 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 1.75rem;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .endpoint:hover {
-            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.2);
         }
 
         .endpoint-header {
@@ -136,7 +118,7 @@
         code {
             font-family: 'Monaco', 'Consolas', monospace;
             font-size: 0.875rem;
-            color: #1f2937;
+            color: #e0e0e0;
         }
 
         .code-block {
@@ -213,12 +195,11 @@
         }
 
         .try-it {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 1.5rem;
             margin-top: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .try-it h3 {
@@ -227,56 +208,39 @@
 
         input, textarea, select {
             width: 100%;
-            padding: 12px 14px;
-            background: var(--bg-secondary);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             color: var(--text-primary);
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-bottom: 1rem;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: var(--text-secondary);
         }
 
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
-            background: #ffffff;
         }
 
         button {
-            padding: 12px 24px;
+            padding: 0.75rem 1.5rem;
             background: var(--accent);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-            letter-spacing: 0.2px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
         }
 
         button:hover {
             background: var(--accent-light);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
-        }
-
-        button:active {
-            transform: translateY(0);
         }
 
         button:disabled {
-            opacity: 0.65;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         #result {
@@ -288,8 +252,6 @@
             white-space: pre-wrap;
             max-height: 400px;
             overflow-y: auto;
-            color: #1f2937;
-            border: 1px solid var(--border);
         }
 
         .status-badge {
@@ -309,8 +271,6 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin: 2rem 0;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .copy-btn {
@@ -331,8 +291,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎬 apilageai-VID API</h1>
-            <p>Professional API Documentation</p>
+            <h1>🎬 Apilage AI Video API</h1>
             <p>Generate educational videos programmatically with AI</p>
         </header>
 
@@ -344,13 +303,8 @@
                 <pre><code>&lt;script src="https://gen.apilageai.lk/static/apilage-sdk.js"&gt;&lt;/script&gt;</code></pre>
                 
                 <h3 style="margin-top: 1.5rem;">Basic Usage</h3>
-                <pre><code>// Initialize client with authentication
-// Get your credentials from your admin panel
-const client = new ApilageAI({
-    baseUrl: 'http://localhost:5002',
-    authCode: 'YOUR_AUTH_CODE_HERE',
-    apiKey: 'YOUR_API_KEY_HERE'
-});
+                <pre><code>// Initialize client
+const client = new ApilageAI();
 
 // Generate a video and wait for completion
 const video = await client.generateAndWait('Explain the Pythagorean theorem', {
@@ -376,105 +330,11 @@ if (job.isComplete()) {
             <h3>NPM / Node.js</h3>
             <pre><code>// Save apilage-sdk.js to your project, then:
 const ApilageAI = require('./apilage-sdk.js');
-const client = new ApilageAI({ 
-    baseUrl: 'https://gen.apilageai.lk',
-    authCode: process.env.APILAGE_AUTH_CODE,  // Set in .env
-    apiKey: process.env.APILAGE_API_KEY       // Set in .env
-});</code></pre>
-        </section>
-
-        <section>
-            <h2>🔐 Authentication</h2>
-            <p>All API endpoints require authentication using two custom headers. This ensures only authorized users can access and use your API.</p>
-            
-            <h3>Required Headers</h3>
-            <table>
-                <tr><th>Header</th><th>Description</th><th>Example</th></tr>
-                <tr><td><code>X-Auth-Code</code></td><td>Your unique authorization code</td><td><code>YOUR_AUTH_CODE_HERE</code></td></tr>
-                <tr><td><code>X-API-Key</code></td><td>Your unique API key</td><td><code>YOUR_API_KEY_HERE</code></td></tr>
-            </table>
-
-            <h3>Include Headers in Every Request</h3>
-            <p>All requests to protected endpoints must include both headers. Without valid credentials, you'll receive a <code>401 Unauthorized</code> response.</p>
-
-            <div class="tab-container">
-                <div class="tabs">
-                    <div class="tab active" data-tab="auth-curl">cURL</div>
-                    <div class="tab" data-tab="auth-js">JavaScript</div>
-                    <div class="tab" data-tab="auth-python">Python</div>
-                </div>
-                <div class="tab-content active" id="auth-curl">
-                    <pre><code>curl -X POST http://localhost:5002/api/generate \
-  -H "X-Auth-Code: YOUR_AUTH_CODE_HERE" \
-  -H "X-API-Key: YOUR_API_KEY_HERE" \
-  -H "Content-Type: application/json" \
-  -d '{"topic": "Explain photosynthesis", "level": "basic"}'</code></pre>
-                </div>
-                <div class="tab-content" id="auth-js">
-                    <pre><code>const headers = {
-    'X-Auth-Code': 'YOUR_AUTH_CODE_HERE',
-    'X-API-Key': 'YOUR_API_KEY_HERE',
-    'Content-Type': 'application/json'
-};
-
-fetch('http://localhost:5002/api/generate', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify({
-        topic: 'Explain photosynthesis',
-        level: 'basic'
-    })
-})
-.then(res => res.json())
-.then(data => console.log(data));</code></pre>
-                </div>
-                <div class="tab-content" id="auth-python">
-                    <pre><code>import requests
-import os
-
-headers = {
-    'X-Auth-Code': os.getenv('APILAGE_AUTH_CODE'),
-    'X-API-Key': os.getenv('APILAGE_API_KEY')
-}
-
-response = requests.post(
-    'http://localhost:5002/api/generate',
-    headers=headers,
-    json={
-        'topic': 'Explain photosynthesis',
-        'level': 'basic'
-    }
-)
-
-print(response.json())</code></pre>
-                </div>
-            </div>
-
-            <h3>Error Response (Unauthorized)</h3>
-            <pre><code>Status Code: 401
-
-{
-  "success": false,
-  "error": "Unauthorized: Invalid or missing API credentials",
-  "required_headers": {
-    "X-Auth-Code": "Your authorization code",
-    "X-API-Key": "Your API key"
-  }
-}</code></pre>
-
-            <h3>Security Tips</h3>
-            <ul style="margin-left: 1rem; color: var(--text-secondary);">
-                <li><strong>Keep credentials private:</strong> Never share your Auth Code or API Key</li>
-                <li><strong>Use environment variables:</strong> Store credentials in .env files, not hardcoded</li>
-                <li><strong>Use HTTPS:</strong> Always use HTTPS in production to protect credentials in transit</li>
-                <li><strong>Rotate periodically:</strong> Consider rotating credentials if you suspect compromise</li>
-                <li><strong>Never expose in logs:</strong> Be careful not to log or expose credentials</li>
-            </ul>
+const client = new ApilageAI({ baseUrl: 'https://gen.apilageai.lk' });</code></pre>
         </section>
 
         <section>
             <h2>📡 API Endpoints</h2>
-            <p><strong>⚠️ Important:</strong> All endpoints below require authentication headers. See the <strong>Authentication</strong> section above for details on how to include your credentials.</p>
 
             <!-- Generate Video -->
             <div class="endpoint">
@@ -498,9 +358,7 @@ print(response.json())</code></pre>
                         <div class="tab" data-tab="python-gen">Python</div>
                     </div>
                     <div class="tab-content active" id="curl-gen">
-                   YOUR_AUTH_CODE_HERE" \
-  -H "X-API-Key: YOUR_API_KEY_HERE
-  -H "X-API-Key: Dineth@30133637HElovEdLithumi" \
+                        <pre><code>curl -X POST https://gen.apilageai.lk/api/generate \
   -H "Content-Type: application/json" \
   -d '{"topic": "Explain the water cycle", "level": "basic"}'</code></pre>
                     </div>
@@ -545,9 +403,7 @@ print(response.json())</code></pre>
                         <div class="tab" data-tab="js-status">JavaScript</div>
                     </div>
                     <div class="tab-content active" id="curl-status">
-                   YOUR_AUTH_CODE_HERE" \
-  -H "X-API-Key: YOUR_API_KEY_HERE
-  -H "X-API-Key: Dineth@30133637HElovEdLithumi"</code></pre>
+                        <pre><code>curl https://gen.apilageai.lk/api/status/a1b2c3d4-e5f6-7890-abcd-ef1234567890</code></pre>
                     </div>
                     <div class="tab-content" id="js-status">
                         <pre><code>const status = await client.getStatus('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
@@ -636,15 +492,6 @@ console.log(status);</code></pre>
         <section>
             <h2>🧪 Try It Live</h2>
             <div class="try-it">
-                <h3>Authentication</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Enter your API credentials to test the video generation. You can find these in your .env file.</p>
-                <input type="text" id="authCode" placeholder="Enter your Auth Code" value="">
-                <input type="password" id="apiKey" placeholder="Enter your API Key" value="">
-                <button onclick="updateCredentials()" style="background: var(--success); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer;">Save Credentials</button>
-                <div id="credentialStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--warning);"></div>
-                
-                <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
-                
                 <h3>Generate a Video</h3>
                 <input type="text" id="topic" placeholder="Enter topic (e.g., Explain gravity)" value="Explain the concept of gravity">
                 <select id="level">
@@ -664,11 +511,9 @@ console.log(status);</code></pre>
             
             <h3>Constructor Options</h3>
             <pre><code>const client = new ApilageAI({
-    baseUrl: 'https://gen.apilageai.lk',      // API base URL
-    authCode: 'your-auth-code',                // Required: Authorization code
-    apiKey: 'your-api-key',                    // Required: API key
-    pollInterval: 3000,                        // Status polling interval (ms)
-    timeout: 30000                             // Request timeout (ms)
+    baseUrl: 'https://gen.apilageai.lk',  // API base URL
+    pollInterval: 3000,                    // Status polling interval (ms)
+    timeout: 30000                         // Request timeout (ms)
 });</code></pre>
 
             <h3>Methods</h3>
@@ -724,42 +569,11 @@ await job.cancel();               // Cancel if pending</code></pre>
         });
 
         // Live testing
-        let client = new ApilageAI();
+        const client = new ApilageAI();
         let currentJobId = null;
         let pollInterval = null;
 
-        function updateCredentials() {
-            const authCode = document.getElementById('authCode').value;
-            const apiKey = document.getElementById('apiKey').value;
-            const credentialStatus = document.getElementById('credentialStatus');
-
-            if (!authCode || !apiKey) {
-                credentialStatus.textContent = '❌ Please enter both Auth Code and API Key';
-                credentialStatus.style.color = 'var(--error)';
-                return;
-            }
-
-            // Reinitialize client with new credentials
-            client = new ApilageAI({
-                baseUrl: window.location.origin,
-                authCode: authCode,
-                apiKey: apiKey
-            });
-
-            credentialStatus.textContent = '✅ Credentials saved! You can now generate videos.';
-            credentialStatus.style.color = 'var(--success)';
-        }
-
         async function generateVideo() {
-            const authCode = document.getElementById('authCode').value;
-            const apiKey = document.getElementById('apiKey').value;
-
-            if (!authCode || !apiKey) {
-                alert('❌ Please enter your Auth Code and API Key first, then click "Save Credentials"');
-                document.getElementById('authCode').focus();
-                return;
-            }
-
             const topic = document.getElementById('topic').value;
             const level = document.getElementById('level').value;
             const result = document.getElementById('result');

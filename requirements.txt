@@ -1,4 +1,0 @@
-flask
-google-generativeai
-elevenlabs
-python-dotenv

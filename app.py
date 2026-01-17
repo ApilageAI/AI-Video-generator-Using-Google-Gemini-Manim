@@ -6,104 +6,11 @@ import threading
 import queue
 import uuid
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
-from utils import generate_manim_code, render_video
-from dotenv import load_dotenv
-from collections import defaultdict
-
-# Load environment variables from .env file
-load_dotenv()
+from utils import render_video_audio_first
 
 app = Flask(__name__)
-
-# ============== RATE LIMITING ==============
-# Simple in-memory rate limiter (IP-based)
-request_tracker = defaultdict(list)
-RATE_LIMIT_WINDOW = 3600  # 1 hour in seconds
-RATE_LIMIT_REQUESTS = 10  # Max 10 requests per hour per IP
-
-def get_client_ip():
-    """Get the client's IP address."""
-    if request.environ.get('HTTP_X_FORWARDED_FOR'):
-        return request.environ.get('HTTP_X_FORWARDED_FOR').split(',')[0]
-    return request.remote_addr
-
-def check_rate_limit():
-    """Check if client has exceeded rate limit."""
-    client_ip = get_client_ip()
-    now = time.time()
-    
-    # Clean old requests (older than 1 hour)
-    request_tracker[client_ip] = [
-        req_time for req_time in request_tracker[client_ip]
-        if now - req_time < RATE_LIMIT_WINDOW
-    ]
-    
-    # Check if limit exceeded
-    if len(request_tracker[client_ip]) >= RATE_LIMIT_REQUESTS:
-        return False
-    
-    # Add current request
-    request_tracker[client_ip].append(now)
-    return True
-
-# ============== AUTHENTICATION CONFIGURATION ==============
-# Load credentials from .env file
-AUTH_CODE = os.getenv('AUTH_CODE', '')
-API_KEY = os.getenv('API_KEY', '')
-
-if not AUTH_CODE or not API_KEY:
-    print("[WARNING] Authentication credentials not set in .env file!")
-    print("[WARNING] API endpoints will be protected but will fail if credentials are missing")
-
-def verify_api_credentials():
-    """
-    Verify API credentials from request headers.
-    Expected headers:
-    - X-Auth-Code: Authorization code
-    - X-API-Key: API key
-    
-    Returns: True if valid, False otherwise
-    """
-    provided_auth = request.headers.get('X-Auth-Code', '').strip()
-    provided_key = request.headers.get('X-API-Key', '').strip()
-    
-    # Check if credentials match
-    if provided_auth == AUTH_CODE and provided_key == API_KEY:
-        return True
-    
-    return False
-
-def require_api_key(f):
-    """
-    Decorator to require API authentication for endpoints.
-    Also enforces rate limiting to prevent spam.
-    """
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Check rate limit first
-        if not check_rate_limit():
-            return jsonify({
-                'success': False,
-                'error': 'Rate limit exceeded. Max 10 requests per hour.',
-                'status_code': 429
-            }), 429
-        
-        # Then verify credentials
-        if not verify_api_credentials():
-            return jsonify({
-                'success': False,
-                'error': 'Unauthorized: Invalid or missing API credentials',
-                'required_headers': {
-                    'X-Auth-Code': 'Your authorization code',
-                    'X-API-Key': 'Your API key'
-                }
-            }), 401
-        
-        return f(*args, **kwargs)
-    
-    return decorated_function
 
 # ============== CORS CONFIGURATION ==============
 # Allow cross-origin requests from any domain for API endpoints
@@ -134,6 +41,28 @@ VIDEOS_DIR = 'media/videos/generated/480p15'
 UPLOADS_DIR = 'uploads'
 JOBS_FILE = 'jobs.json'
 
+
+def pick_most_recent_upload_mp4(prefer_final: bool = True):
+    """Pick the most recent MP4 in uploads/, preferring *_final.mp4 when present."""
+    if not os.path.exists(UPLOADS_DIR):
+        return None
+
+    mp4_files = [f for f in os.listdir(UPLOADS_DIR) if f.endswith('.mp4')]
+    if not mp4_files:
+        return None
+
+    def ctime(name: str) -> float:
+        return os.path.getctime(os.path.join(UPLOADS_DIR, name))
+
+    if prefer_final:
+        final_files = [f for f in mp4_files if f.endswith('_final.mp4')]
+        if final_files:
+            final_files.sort(key=ctime, reverse=True)
+            return final_files[0]
+
+    mp4_files.sort(key=ctime, reverse=True)
+    return mp4_files[0]
+
 # ============== JOB QUEUE SYSTEM ==============
 # Thread-safe queue for video generation jobs
 job_queue = queue.Queue()
@@ -154,8 +83,16 @@ def load_jobs():
         try:
             with open(JOBS_FILE, 'r') as f:
                 jobs = json.load(f)
-        except:
+        except Exception as e:
+            # If the file is corrupted, quarantine it and start fresh.
+            try:
+                ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+                os.replace(JOBS_FILE, f"{JOBS_FILE}.corrupt_{ts}.bak")
+            except Exception:
+                pass
+            print(f"[WARN] Failed to load jobs.json (resetting): {e}")
             jobs = {}
+            save_jobs()
     return jobs
 
 
@@ -184,7 +121,7 @@ def update_job(job_id, **kwargs):
     save_jobs()
 
 
-def create_job(topic, level):
+def create_job(topic):
     """Create a new job and add to queue."""
     job_id = str(uuid.uuid4())
     
@@ -195,7 +132,6 @@ def create_job(topic, level):
         jobs[job_id] = {
             'id': job_id,
             'topic': topic,
-            'level': level,
             'status': 'pending',  # pending, processing, completed, failed
             'queue_position': pending_count + 1,
             'created_at': datetime.now().isoformat(),
@@ -214,159 +150,44 @@ def create_job(topic, level):
 
 
 def process_job(job_id):
-    """
-    Process a single video generation job using NEW AUDIO-FIRST WORKFLOW:
-    1. Generate audio script with timing
-    2. Render voice audio
-    3. Get actual audio duration
-    4. Generate adaptive Manim code based on audio timing
-    5. Render video
-    6. Combine audio and video
-    """
+    """Process a single video generation job using AUDIO-FIRST workflow."""
     job = get_job(job_id)
     if not job:
         return
     
     topic = job['topic']
-    level = job['level']
-    
     try:
-        print(f"[JOB {job_id[:8]}] Processing: {topic}")
-        print(f"[JOB {job_id[:8]}] Starting NEW AUDIO-FIRST WORKFLOW")
+        update_job(job_id, status='processing', progress='Generating narration audio first...')
+        print(f"[JOB {job_id[:8]}] Processing with AUDIO-FIRST workflow: {topic}")
         
-        # STEP 1: Generate audio script with timing
-        update_job(job_id, status='processing', progress='Generating audio script...')
-        print(f"[JOB {job_id[:8]}] STEP 1: Generating audio script with timing")
+        # ===== AUDIO-FIRST (SEGMENTED) WORKFLOW =====
+        # 1) Generate narration script (no templates)
+        # 2) Split into segments
+        # 3) Generate TTS audio per segment to get exact timings
+        # 4) Generate + render Manim per segment, matching segment duration
+        # 5) Mux each segment and concatenate into final MP4
+
+        update_job(job_id, progress='Generating full video (segmented audio+video sync)...')
+
+        # Run the full production pipeline
+        video_path, voice_script, subtitles = render_video_audio_first(topic)
         
-        from utils import generate_audio_script_with_timing, generate_audio, get_audio_timing_info, generate_adaptive_manim_code
-        
-        script_data = generate_audio_script_with_timing(topic, level)
-        if not script_data or not script_data.get('script'):
-            update_job(job_id, status='failed', error='Failed to generate audio script')
+        if not video_path or not os.path.exists(video_path):
+            update_job(job_id, status='failed', error='Video rendering failed')
             return
-        
-        voice_script = script_data.get('script', '')
-        print(f"[JOB {job_id[:8]}] Audio script generated: {len(voice_script)} chars")
-        
-        # STEP 2: Render voice audio
-        update_job(job_id, status='processing', progress='Rendering voice narration...')
-        print(f"[JOB {job_id[:8]}] STEP 2: Rendering voice audio")
-        
-        try:
-            audio_path = generate_audio(voice_script)
-            if not audio_path or not os.path.exists(audio_path):
-                raise Exception("Audio file not created")
-            print(f"[JOB {job_id[:8]}] Audio rendered: {audio_path}")
-        except Exception as audio_error:
-            error_msg = str(audio_error)[:500]
-            print(f"[JOB {job_id[:8]}] ERROR: Audio rendering failed: {error_msg}")
-            masked_error = mask_gemini_error(error_msg)
-            update_job(job_id, status='failed', error=f"Voice rendering failed: {masked_error}")
-            return
-        
-        # STEP 3: Get actual audio duration for adaptive code generation
-        update_job(job_id, status='processing', progress='Analyzing audio timing...')
-        print(f"[JOB {job_id[:8]}] STEP 3: Analyzing audio timing")
-        
-        try:
-            audio_timing = get_audio_timing_info(audio_path)
-            audio_duration = audio_timing.get('duration', 70)
-            print(f"[JOB {job_id[:8]}] Audio duration: {audio_duration:.1f} seconds")
-        except Exception as timing_error:
-            print(f"[JOB {job_id[:8]}] WARNING: Could not get audio timing: {timing_error}")
-            audio_duration = script_data.get('total_duration_estimate', 70)
-            print(f"[JOB {job_id[:8]}] Using estimated duration: {audio_duration:.1f} seconds")
-        
-        # STEP 4: Generate adaptive Manim code based on actual audio
-        update_job(job_id, status='processing', progress='Generating adaptive animations...')
-        print(f"[JOB {job_id[:8]}] STEP 4: Generating adaptive Manim code (duration: {audio_duration:.1f}s)")
-        
-        try:
-            code, full_script = generate_adaptive_manim_code(
-                topic, 
-                level, 
-                script_data, 
-                audio_duration
-            )
-            
-            if not code:
-                update_job(job_id, status='failed', error='Failed to generate adaptive animations')
-                return
-            print(f"[JOB {job_id[:8]}] Adaptive Manim code generated: {len(code)} chars")
-        except Exception as code_error:
-            error_msg = str(code_error)[:500]
-            print(f"[JOB {job_id[:8]}] ERROR: Manim code generation failed: {error_msg}")
-            masked_error = mask_gemini_error(error_msg)
-            update_job(job_id, status='failed', error=f"Animation generation failed: {masked_error}")
-            return
-        
-        # STEP 5: Render video from adaptive code
-        update_job(job_id, status='processing', progress='Rendering video animations...')
-        print(f"[JOB {job_id[:8]}] STEP 5: Rendering video animations")
-        
-        try:
-            # Render video WITHOUT audio first (we'll combine them separately)
-            video_path = render_video(code, text_input=None)
-            
-            if not video_path or not os.path.exists(video_path):
-                update_job(job_id, status='failed', error='Video rendering failed')
-                return
-            print(f"[JOB {job_id[:8]}] Video rendered: {video_path}")
-        except Exception as render_error:
-            error_msg = str(render_error)[:500]
-            print(f"[JOB {job_id[:8]}] ERROR: Video rendering failed: {error_msg}")
-            masked_error = mask_gemini_error(error_msg)
-            update_job(job_id, status='failed', error=f"Video rendering failed: {masked_error}")
-            return
-        
-        # STEP 6: Combine pre-rendered audio with video
-        update_job(job_id, status='processing', progress='Combining audio and video...')
-        print(f"[JOB {job_id[:8]}] STEP 6: Combining audio and video")
-        
-        try:
-            from utils import combine_audio_video, copy_to_uploads
-            
-            final_video = combine_audio_video(video_path, audio_path)
-            print(f"[JOB {job_id[:8]}] Audio and video combined: {final_video}")
-            
-            # Clean up audio file
-            if audio_path and os.path.exists(audio_path):
-                try:
-                    os.unlink(audio_path)
-                    print(f"[JOB {job_id[:8]}] Cleaned up audio file")
-                except:
-                    pass
-            
-            # Copy to uploads folder
-            final_video = copy_to_uploads(final_video)
-            print(f"[JOB {job_id[:8]}] Copied to uploads: {final_video}")
-        except Exception as combine_error:
-            error_msg = str(combine_error)[:500]
-            print(f"[JOB {job_id[:8]}] WARNING: Audio-video combination failed: {error_msg}")
-            # If combination fails, still try to use the video
-            try:
-                from utils import copy_to_uploads
-                final_video = copy_to_uploads(video_path)
-                print(f"[JOB {job_id[:8]}] Using video without audio: {final_video}")
-            except:
-                update_job(job_id, status='failed', error='Failed to finalize video')
-                return
         
         # Find the uploaded video from uploads folder
-        upload_filename = None
-        if os.path.exists(UPLOADS_DIR):
-            mp4_files = [f for f in os.listdir(UPLOADS_DIR) if f.endswith('.mp4')]
-            if mp4_files:
-                mp4_files.sort(key=lambda x: os.path.getctime(os.path.join(UPLOADS_DIR, x)), reverse=True)
-                upload_filename = mp4_files[0]
+        upload_filename = pick_most_recent_upload_mp4(prefer_final=True)
         
         # Use upload URL if available
         if upload_filename:
             video_url = f"/uploads/{upload_filename}"
             video_filename = upload_filename
         else:
-            video_filename = os.path.basename(final_video)
+            video_filename = os.path.basename(video_path)
             video_url = f"/videos/{video_filename}"
+        
+        video_title = topic[:47] + ('...' if len(topic) > 47 else '')
         
         # Update job as completed
         update_job(
@@ -374,19 +195,16 @@ def process_job(job_id):
             status='completed', 
             video_url=video_url,
             video_filename=video_filename,
+            subtitles=subtitles,
             progress='Completed!'
         )
         
-        print(f"[JOB {job_id[:8]}] ✓ COMPLETED: {video_url}")
-        print(f"[JOB {job_id[:8]}] Workflow: Script → Audio → Adaptive Manim → Video → Combined")
+        print(f"[JOB {job_id[:8]}] Completed: {video_url}")
         
     except Exception as e:
         error_msg = str(e)[:500]
-        print(f"[JOB {job_id[:8]}] ✗ FAILED: {error_msg}")
-        traceback.print_exc()
-        # Mask Gemini API errors to hide technology stack
-        masked_error = mask_gemini_error(error_msg)
-        update_job(job_id, status='failed', error=masked_error, progress='Failed')
+        print(f"[JOB {job_id[:8]}] Failed: {error_msg}")
+        update_job(job_id, status='failed', error=error_msg, progress='Failed')
 
 
 def worker():
@@ -438,70 +256,49 @@ def stop_worker():
     if worker_thread:
         worker_thread.join(timeout=5)
 
-
-def mask_gemini_error(error_message):
-    """
-    Mask Gemini API errors to hide technology stack.
-    Shows generic error message for Gemini-specific errors.
-    Other errors pass through unchanged.
-    """
-    error_lower = error_message.lower()
-    
-    # Check if this is a Gemini API error
-    gemini_error_keywords = [
-        'api key',
-        'invalid api',
-        'expired',
-        'authentication',
-        'unauthorized',
-        'gemini',
-        'generative',  # Catches both "generative ai" and "generative-ai"
-        'googleapis.com',
-        'generativelanguage',
-        'api_key_invalid',
-        '400',  # Bad request (often API key issues)
-        '401',
-        '403',
-        'forbidden',
-        'permission denied'
-    ]
-    
-    # If it's a Gemini error, return masked message
-    for keyword in gemini_error_keywords:
-        if keyword in error_lower:
-            return "Error from apilageai.lk reach them at contact@apilageai.lk"
-    
-    # Otherwise, return the original error
-    return error_message
-
 def load_videos():
     """Load videos directly from uploads folder."""
     videos = []
     
     if os.path.exists(UPLOADS_DIR):
-        # Get all mp4 files from uploads folder
-        for filename in sorted(os.listdir(UPLOADS_DIR), reverse=True):
-            if filename.endswith('.mp4'):
-                filepath = os.path.join(UPLOADS_DIR, filename)
-                stat = os.stat(filepath)
+        mp4_files = [f for f in os.listdir(UPLOADS_DIR) if f.endswith('.mp4')]
+        final_files = {f for f in mp4_files if f.endswith('_final.mp4')}
+
+        # Sort newest first (ctime)
+        mp4_files.sort(key=lambda x: os.path.getctime(os.path.join(UPLOADS_DIR, x)), reverse=True)
+
+        for filename in mp4_files:
+            # Hide segment/intermediate outputs when a final render exists.
+            if '_seg' in filename:
+                continue
+            if filename.endswith('_av.mp4'):
+                base = filename[:-len('_av.mp4')]
+                if f"{base}_final.mp4" in final_files:
+                    continue
+
+            filepath = os.path.join(UPLOADS_DIR, filename)
+            stat = os.stat(filepath)
                 
                 # Extract title from filename (remove timestamp and extension)
                 # Format: MathExplanationScene_20251209_095730.mp4
-                title = filename.replace('.mp4', '')
+            title = filename.replace('.mp4', '')
+            if title.endswith('_final'):
+                title = title[:-len('_final')]
+            elif title.endswith('_av'):
+                title = title[:-len('_av')]
                 if '_' in title:
                     parts = title.rsplit('_', 2)  # Split from right to get base name
                     if len(parts) >= 3:
                         title = parts[0]  # Get the scene name part
                 
-                videos.append({
-                    'title': title[:50] + ('...' if len(title) > 50 else ''),
-                    'url': f'/uploads/{filename}',
-                    'filename': filename,
-                    'level': 'basic',
-                    'subtitles': '',
-                    'created': datetime.fromtimestamp(stat.st_ctime).isoformat(),
-                    'size': stat.st_size
-                })
+            videos.append({
+                'title': title[:50] + ('...' if len(title) > 50 else ''),
+                'url': f'/uploads/{filename}',
+                'filename': filename,
+                'subtitles': '',
+                'created': datetime.fromtimestamp(stat.st_ctime).isoformat(),
+                'size': stat.st_size
+            })
     
     return videos
 
@@ -532,71 +329,15 @@ def api_docs():
     return render_template('api-docs.html')
 
 
-@app.route('/api/auth-info', methods=['GET'])
-def auth_info():
-    """
-    Public endpoint that explains how to authenticate.
-    Shows the required headers and format.
-    """
-    return jsonify({
-        'message': 'This API requires authentication',
-        'status': 'authentication_required',
-        'how_to_authenticate': {
-            'description': 'All API endpoints require two headers',
-            'required_headers': [
-                {
-                    'name': 'X-Auth-Code',
-                    'description': 'Your authorization code',
-                    'example': 'X-Auth-Code: your-auth-code-here'
-                },
-                {
-                    'name': 'X-API-Key',
-                    'description': 'Your API key',
-                    'example': 'X-API-Key: your-api-key-here'
-                }
-            ],
-            'example_curl': 'curl -X POST http://localhost:5002/api/generate \\',
-            'example_curl_continued': [
-                '  -H "Content-Type: application/json" \\',
-                '  -H "X-Auth-Code: your-auth-code" \\',
-                '  -H "X-API-Key: your-api-key" \\',
-                '  -d \'{"topic": "Explain photosynthesis", "level": "basic"}\''
-            ],
-            'example_python': 'requests.post(url, headers={"X-Auth-Code": code, "X-API-Key": key}, json=data)'
-        },
-        'endpoints': [
-            {'method': 'POST', 'path': '/api/generate', 'description': 'Generate new video'},
-            {'method': 'GET', 'path': '/api/status/{job_id}', 'description': 'Check job status'},
-            {'method': 'GET', 'path': '/api/video/{job_id}', 'description': 'Get video details'},
-            {'method': 'GET', 'path': '/api/queue', 'description': 'Get queue status'},
-            {'method': 'GET', 'path': '/api/videos', 'description': 'List all videos'},
-            {'method': 'POST', 'path': '/api/cancel/{job_id}', 'description': 'Cancel a job'},
-            {'method': 'GET', 'path': '/api/uploads', 'description': 'List uploads'}
-        ]
-    })
-
-
 @app.route('/generate', methods=['POST'])
 def generate():
-    """Generate a new video from text input with custom styling and parameters."""
+    """Generate a new video from text input."""
     data = request.get_json()
     text_input = data.get('text', '').strip()
-    level = data.get('level', 'basic')
-    style = data.get('style', 'animated')  # animated, minimal, mathematical, creative, technical, storytelling
-    duration = data.get('duration', 60)  # seconds, auto-adjusted to audio
-    colors = data.get('colors', None)  # custom color palette
-    objects = data.get('objects', None)  # custom visual elements
 
     print(f"\n{'='*50}")
     print(f"[GENERATE REQUEST]")
     print(f"Topic: '{text_input}'")
-    print(f"Level: {level}")
-    print(f"Style: {style}")
-    print(f"Duration: {duration}s (will adjust to match audio)")
-    if colors:
-        print(f"Colors: {colors}")
-    if objects:
-        print(f"Objects: {objects}")
     print(f"{'='*50}\n")
 
     if not text_input:
@@ -609,36 +350,15 @@ def generate():
         return jsonify({'error': 'Description is too long. Please keep it under 500 characters.'}), 400
 
     try:
-        # Generate Manim code, voice script, and subtitles using Gemini with custom parameters
-        print(f"Generating Manim code for: {text_input}")
-        code, voice_script, subtitles = generate_manim_code(
-            text_input, 
-            level=level,
-            style=style,
-            duration=duration,
-            colors=colors,
-            objects=objects
-        )
-
-        if not code:
-            return jsonify({'error': 'Failed to generate animation code. Please try a different topic.'}), 500
-
-        # Render the video with voice over
-        print("Rendering video...")
-        video_path = render_video(code, text_input=voice_script, subtitles=subtitles)
+        # Audio-first generation to match narration timing
+        print(f"Generating audio-first video for: {text_input}")
+        video_path, voice_script, subtitles = render_video_audio_first(text_input)
 
         if not video_path or not os.path.exists(video_path):
             return jsonify({'error': 'Video was generated but file not found.'}), 500
 
-        # Find the uploaded video (it was copied to uploads/ folder)
-        # Get the most recent file in uploads folder
-        upload_filename = None
-        if os.path.exists(UPLOADS_DIR):
-            mp4_files = [f for f in os.listdir(UPLOADS_DIR) if f.endswith('.mp4')]
-            if mp4_files:
-                # Get most recent file
-                mp4_files.sort(key=lambda x: os.path.getctime(os.path.join(UPLOADS_DIR, x)), reverse=True)
-                upload_filename = mp4_files[0]
+        # Prefer *_final.mp4 so users see the real final render.
+        upload_filename = pick_most_recent_upload_mp4(prefer_final=True)
         
         # Use upload URL if available, otherwise use original video path
         if upload_filename:
@@ -652,25 +372,20 @@ def generate():
         video_title = text_input[:47] + ('...' if len(text_input) > 47 else '')
 
         print(f"Video generated successfully: {video_filename}")
-        print(f"Style: {style}, Duration: ~{duration}s")
 
         # Return the video URL and subtitles
-        return jsonify({
-            'video_url': video_url, 
+        resp = jsonify({
+            'video_url': video_url,
             'subtitles': subtitles,
-            'title': video_title,
-            'level': level,
-            'style': style,
-            'duration': duration
+            'title': video_title
         })
+        resp.headers['Cache-Control'] = 'no-store'
+        return resp
 
     except Exception as e:
         error_message = str(e)
         print(f"Error generating video: {error_message}")
         print(traceback.format_exc())
-        
-        # Mask Gemini API errors to hide technology stack
-        masked_error = mask_gemini_error(error_message)
         
         # Provide user-friendly error messages
         if "syntax" in error_message.lower():
@@ -680,7 +395,7 @@ def generate():
         elif "manim" in error_message.lower():
             return jsonify({'error': 'Animation rendering failed. Please try again with a different topic.'}), 500
         else:
-            return jsonify({'error': masked_error[:200]}), 500
+            return jsonify({'error': f'An error occurred: {error_message[:200]}'}), 500
 
 @app.route('/videos')
 def get_videos():
@@ -688,7 +403,9 @@ def get_videos():
     try:
         # Sync with filesystem to catch any orphaned files
         videos = sync_videos_with_filesystem()
-        return jsonify(videos)
+        resp = jsonify(videos)
+        resp.headers['Cache-Control'] = 'no-store'
+        return resp
     except Exception as e:
         print(f"Error loading videos: {e}")
         return jsonify([])
@@ -732,7 +449,6 @@ def get_upload(filename):
 
 
 @app.route('/api/uploads', methods=['GET'])
-@require_api_key
 def api_uploads():
     """
     Get list of all uploaded videos in the uploads/ folder.
@@ -788,7 +504,6 @@ def health_check():
 # ============== API ENDPOINTS ==============
 
 @app.route('/api/generate', methods=['POST'])
-@require_api_key
 def api_generate():
     """
     API endpoint to submit a video generation request.
@@ -796,8 +511,7 @@ def api_generate():
     
     Request body:
     {
-        "topic": "Explain the Pythagorean theorem",
-        "level": "basic"  // optional: basic, intermediate, special_topic
+        "topic": "Explain the Pythagorean theorem"
     }
     
     Response:
@@ -818,9 +532,8 @@ def api_generate():
             }), 400
         
         topic = data.get('topic', '').strip()
-        level = data.get('level', 'basic').strip()
         
-        # Input validation and sanitization
+        # Validation
         if not topic:
             return jsonify({
                 'success': False,
@@ -839,20 +552,8 @@ def api_generate():
                 'error': 'Topic must be less than 500 characters'
             }), 400
         
-        # Prevent common injection patterns
-        forbidden_chars = ['<', '>', '{', '}', '$(', '`', ';rm', 'DROP', 'DELETE']
-        for char in forbidden_chars:
-            if char.lower() in topic.lower():
-                return jsonify({
-                    'success': False,
-                    'error': 'Topic contains invalid characters'
-                }), 400
-        
-        if level not in ['basic', 'intermediate', 'special_topic']:
-            level = 'basic'
-        
         # Create job and add to queue
-        job_id = create_job(topic, level)
+        job_id = create_job(topic)
         job = get_job(job_id)
         
         print(f"[API] New job created: {job_id[:8]} - {topic[:50]}")
@@ -868,16 +569,13 @@ def api_generate():
         
     except Exception as e:
         print(f"[API] Error: {e}")
-        # Mask Gemini API errors to hide technology stack
-        masked_error = mask_gemini_error(str(e))
         return jsonify({
             'success': False,
-            'error': masked_error
+            'error': str(e)
         }), 500
 
 
 @app.route('/api/status/<job_id>', methods=['GET'])
-@require_api_key
 def api_status(job_id):
     """
     Check the status of a video generation job.
@@ -911,7 +609,6 @@ def api_status(job_id):
         'job': {
             'id': job['id'],
             'topic': job['topic'],
-            'level': job['level'],
             'status': job['status'],
             'progress': job.get('progress', ''),
             'created_at': job['created_at'],
@@ -934,7 +631,6 @@ def api_status(job_id):
 
 
 @app.route('/api/video/<job_id>', methods=['GET'])
-@require_api_key
 def api_video(job_id):
     """
     Get video details for a completed job.
@@ -978,7 +674,6 @@ def api_video(job_id):
 
 
 @app.route('/api/queue', methods=['GET'])
-@require_api_key
 def api_queue():
     """
     Get current queue status.
@@ -1028,7 +723,6 @@ def api_queue():
 
 
 @app.route('/api/cancel/<job_id>', methods=['POST', 'DELETE'])
-@require_api_key
 def api_cancel(job_id):
     """
     Cancel a pending job.
@@ -1057,7 +751,6 @@ def api_cancel(job_id):
 
 
 @app.route('/api/videos', methods=['GET'])
-@require_api_key
 def api_videos():
     """
     Get list of all generated videos.
