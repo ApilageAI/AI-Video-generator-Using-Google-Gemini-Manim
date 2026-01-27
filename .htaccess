@@ -1,0 +1,15 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Redirect all requests to the WSGI application
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /cgi-bin/passenger_wsgi.py/$1 [QSA,PT,L]
+
+# Set passenger environment to production
+PassengerAppEnv production
+
+# Python WSGI application
+PassengerEnabled on
+PassengerAppType wsgi
+PassengerStartupFile wsgi.py
