@@ -1323,12 +1323,17 @@
 
         // Load Videos
         async function loadVideos() {
+            console.log('Loading videos...');
             try {
                 const response = await fetch('/videos', { cache: 'no-store' });
+                console.log('Response status:', response.status);
                 if (response.ok) {
                     videos = await response.json();
+                    console.log('Videos loaded:', videos.length, videos);
                     displayVideos();
                     updateVideoCount();
+                } else {
+                    console.error('Failed to load videos, status:', response.status);
                 }
             } catch (error) {
                 console.error('Error loading videos:', error);
@@ -1344,16 +1349,22 @@
 
         // Display Videos
         function displayVideos(searchTerm = '') {
+            console.log('Displaying videos, total:', videos.length, 'search:', searchTerm);
             const grid = document.getElementById('videos-grid');
             const emptyState = document.getElementById('empty-state');
+            
+            console.log('Grid element:', grid);
 
             const filtered = videos.filter(video =>
                 video.title.toLowerCase().includes(searchTerm.toLowerCase())
             );
+            
+            console.log('Filtered videos:', filtered.length);
 
             if (filtered.length === 0) {
                 grid.innerHTML = '';
                 emptyState.style.display = 'block';
+                console.log('No videos to display');
                 return;
             }
 

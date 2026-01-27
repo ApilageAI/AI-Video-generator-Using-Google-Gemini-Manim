@@ -296,19 +296,36 @@
         </header>
 
         <section>
+            <h2>� Authentication</h2>
+            <div class="endpoint">
+                <p><strong>All API endpoints require authentication.</strong> Include these headers with every request:</p>
+                <table>
+                    <tr><th>Header</th><th>Value</th><th>Description</th></tr>
+                    <tr><td><code>X-Auth-Code</code></td><td>Your Auth Code</td><td>Authorization code provided by Apilage AI</td></tr>
+                    <tr><td><code>X-API-Key</code></td><td>Your API Key</td><td>API key provided by Apilage AI</td></tr>
+                </table>
+                <p style="margin-top: 1rem;"><strong>⚠️ Note:</strong> The web UI at <a href="https://nova.apilageai.lk" style="color: var(--accent);">nova.apilageai.lk</a> is publicly accessible and does not require authentication. Only programmatic API access requires credentials.</p>
+                <p style="color: var(--warning); margin-top: 0.5rem;">📧 <strong>To request API credentials:</strong> Contact the administrator at <code>admin@apilageai.lk</code></p>
+            </div>
+        </section>
+
+        <section>
             <h2>🚀 Quick Start</h2>
             
             <div class="sdk-install">
                 <h3>Include the SDK</h3>
-                <pre><code>&lt;script src="https://gen.apilageai.lk/static/apilage-sdk.js"&gt;&lt;/script&gt;</code></pre>
+                <pre><code>&lt;script src="https://nova.apilageai.lk/static/apilage-sdk.js"&gt;&lt;/script&gt;</code></pre>
                 
                 <h3 style="margin-top: 1.5rem;">Basic Usage</h3>
-                <pre><code>// Initialize client
-const client = new ApilageAI();
+                <pre><code>// Initialize client with authentication
+const client = new ApilageAI({
+    baseUrl: 'https://nova.apilageai.lk',
+    authCode: 'YOUR_AUTH_CODE',  // Request from admin
+    apiKey: 'YOUR_API_KEY'        // Request from admin
+});
 
 // Generate a video and wait for completion
 const video = await client.generateAndWait('Explain the Pythagorean theorem', {
-    level: 'basic',
     onProgress: (status) => {
         console.log(`Status: ${status.status} - ${status.progress}`);
     }
@@ -330,7 +347,11 @@ if (job.isComplete()) {
             <h3>NPM / Node.js</h3>
             <pre><code>// Save apilage-sdk.js to your project, then:
 const ApilageAI = require('./apilage-sdk.js');
-const client = new ApilageAI({ baseUrl: 'https://gen.apilageai.lk' });</code></pre>
+const client = new ApilageAI({ 
+    baseUrl: 'https://nova.apilageai.lk',
+    authCode: 'YOUR_AUTH_CODE',
+    apiKey: 'YOUR_API_KEY'
+});</code></pre>
         </section>
 
         <section>
@@ -348,7 +369,6 @@ const client = new ApilageAI({ baseUrl: 'https://gen.apilageai.lk' });</code></p
                 <table>
                     <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
                     <tr><td><code>topic</code></td><td>string</td><td>Yes</td><td>Topic to explain (3-500 chars)</td></tr>
-                    <tr><td><code>level</code></td><td>string</td><td>No</td><td>basic, intermediate, or special_topic</td></tr>
                 </table>
 
                 <div class="tab-container">
@@ -358,22 +378,35 @@ const client = new ApilageAI({ baseUrl: 'https://gen.apilageai.lk' });</code></p
                         <div class="tab" data-tab="python-gen">Python</div>
                     </div>
                     <div class="tab-content active" id="curl-gen">
-                        <pre><code>curl -X POST https://gen.apilageai.lk/api/generate \
+                        <pre><code>curl -X POST https://nova.apilageai.lk/api/generate \
   -H "Content-Type: application/json" \
-  -d '{"topic": "Explain the water cycle", "level": "basic"}'</code></pre>
+  -H "X-Auth-Code: YOUR_AUTH_CODE" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"topic": "Explain the water cycle"}'</code></pre>
                     </div>
                     <div class="tab-content" id="js-gen">
-                        <pre><code>const client = new ApilageAI();
-const job = await client.generate('Explain the water cycle', { level: 'basic' });
+                        <pre><code>// Authentication is handled automatically by the SDK
+const client = new ApilageAI({
+    authCode: 'YOUR_AUTH_CODE',
+    apiKey: 'YOUR_API_KEY'
+});
+const job = await client.generate('Explain the water cycle');
 console.log('Job ID:', job.id);</code></pre>
                     </div>
                     <div class="tab-content" id="python-gen">
                         <pre><code>import requests
 
-response = requests.post('https://gen.apilageai.lk/api/generate', json={
-    'topic': 'Explain the water cycle',
-    'level': 'basic'
-})
+headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Code': 'YOUR_AUTH_CODE',
+    'X-API-Key': 'YOUR_API_KEY'
+}
+
+response = requests.post('https://nova.apilageai.lk/api/generate', 
+    headers=headers,
+    json={
+        'topic': 'Explain the water cycle'
+    })
 print(response.json())</code></pre>
                     </div>
                 </div>
@@ -403,7 +436,9 @@ print(response.json())</code></pre>
                         <div class="tab" data-tab="js-status">JavaScript</div>
                     </div>
                     <div class="tab-content active" id="curl-status">
-                        <pre><code>curl https://gen.apilageai.lk/api/status/a1b2c3d4-e5f6-7890-abcd-ef1234567890</code></pre>
+                        <pre><code>curl https://nova.apilageai.lk/api/status/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
+  -H "X-Auth-Code: YOUR_AUTH_CODE" \
+  -H "X-API-Key: YOUR_API_KEY"</code></pre>
                     </div>
                     <div class="tab-content" id="js-status">
                         <pre><code>const status = await client.getStatus('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
@@ -437,7 +472,7 @@ console.log(status);</code></pre>
   "success": true,
   "ready": true,
   "video_url": "/videos/video_12345.mp4",
-  "full_url": "https://gen.apilageai.lk/videos/video_12345.mp4",
+  "full_url": "https://nova.apilageai.lk/videos/video_12345.mp4",
   "subtitles": "WEBVTT\n\n00:00:00.000 --> 00:00:05.000\n...",
   "topic": "Explain the water cycle"
 }</code></pre>
@@ -492,13 +527,12 @@ console.log(status);</code></pre>
         <section>
             <h2>🧪 Try It Live</h2>
             <div class="try-it">
-                <h3>Generate a Video</h3>
+                <h3>Test API (Authentication Required)</h3>
+                <p style="color: var(--warning); margin-bottom: 1rem;">⚠️ This section requires valid API credentials. <a href="mailto:admin@apilageai.lk" style="color: var(--accent);">Request credentials</a></p>
+                
+                <input type="text" id="authCode" placeholder="Enter your Auth Code">
+                <input type="text" id="apiKey" placeholder="Enter your API Key">
                 <input type="text" id="topic" placeholder="Enter topic (e.g., Explain gravity)" value="Explain the concept of gravity">
-                <select id="level">
-                    <option value="basic">Basic</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="special_topic">Advanced</option>
-                </select>
                 <button id="generateBtn" onclick="generateVideo()">Generate Video</button>
                 <button id="checkBtn" onclick="checkStatus()" disabled>Check Status</button>
                 
@@ -511,9 +545,11 @@ console.log(status);</code></pre>
             
             <h3>Constructor Options</h3>
             <pre><code>const client = new ApilageAI({
-    baseUrl: 'https://gen.apilageai.lk',  // API base URL
-    pollInterval: 3000,                    // Status polling interval (ms)
-    timeout: 30000                         // Request timeout (ms)
+    baseUrl: 'https://nova.apilageai.lk',  // API base URL
+    authCode: 'YOUR_AUTH_CODE',             // Your authentication code
+    apiKey: 'YOUR_API_KEY',                 // Your API key
+    pollInterval: 3000,                     // Status polling interval (ms)
+    timeout: 30000                          // Request timeout (ms)
 });</code></pre>
 
             <h3>Methods</h3>
@@ -569,28 +605,40 @@ await job.cancel();               // Cancel if pending</code></pre>
         });
 
         // Live testing
-        const client = new ApilageAI();
+        const client = new ApilageAI({
+            baseUrl: window.location.origin
+        });
         let currentJobId = null;
         let pollInterval = null;
 
         async function generateVideo() {
+            const authCode = document.getElementById('authCode').value;
+            const apiKey = document.getElementById('apiKey').value;
             const topic = document.getElementById('topic').value;
-            const level = document.getElementById('level').value;
             const result = document.getElementById('result');
             const generateBtn = document.getElementById('generateBtn');
             const checkBtn = document.getElementById('checkBtn');
+
+            if (!authCode || !apiKey) {
+                alert('Please enter your authentication credentials');
+                return;
+            }
 
             if (!topic) {
                 alert('Please enter a topic');
                 return;
             }
 
+            // Update client with credentials
+            client.authCode = authCode;
+            client.apiKey = apiKey;
+
             generateBtn.disabled = true;
             result.style.display = 'block';
             result.textContent = 'Submitting request...';
 
             try {
-                const job = await client.generate(topic, { level });
+                const job = await client.generate(topic);
                 currentJobId = job.id;
                 
                 result.textContent = JSON.stringify({

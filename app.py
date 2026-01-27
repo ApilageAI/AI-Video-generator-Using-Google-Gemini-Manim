@@ -8,9 +8,42 @@ import uuid
 import time
 from datetime import datetime
 from functools import wraps
+from dotenv import load_dotenv
 from utils import render_video_audio_first
 
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
+
+# ============== API AUTHENTICATION ==============
+# Load API credentials from .env file
+AUTH_CODE = os.getenv('AUTH_CODE')
+API_KEY = os.getenv('API_KEY')
+
+def require_api_auth(f):
+    """Decorator to require API authentication via headers."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Get auth headers
+        auth_code = request.headers.get('X-Auth-Code')
+        api_key = request.headers.get('X-API-Key')
+        
+        # Check if credentials are valid
+        if not auth_code or not api_key:
+            return jsonify({
+                'success': False,
+                'error': 'Missing authentication headers. Required: X-Auth-Code and X-API-Key'
+            }), 401
+        
+        if auth_code != AUTH_CODE or api_key != API_KEY:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid authentication credentials'
+            }), 403
+        
+        return f(*args, **kwargs)
+    return decorated_function
 
 # ============== CORS CONFIGURATION ==============
 # Allow cross-origin requests from any domain for API endpoints
@@ -449,6 +482,7 @@ def get_upload(filename):
 
 
 @app.route('/api/uploads', methods=['GET'])
+@require_api_auth
 def api_uploads():
     """
     Get list of all uploaded videos in the uploads/ folder.
@@ -504,6 +538,7 @@ def health_check():
 # ============== API ENDPOINTS ==============
 
 @app.route('/api/generate', methods=['POST'])
+@require_api_auth
 def api_generate():
     """
     API endpoint to submit a video generation request.
@@ -576,6 +611,7 @@ def api_generate():
 
 
 @app.route('/api/status/<job_id>', methods=['GET'])
+@require_api_auth
 def api_status(job_id):
     """
     Check the status of a video generation job.
@@ -631,6 +667,7 @@ def api_status(job_id):
 
 
 @app.route('/api/video/<job_id>', methods=['GET'])
+@require_api_auth
 def api_video(job_id):
     """
     Get video details for a completed job.
@@ -674,6 +711,7 @@ def api_video(job_id):
 
 
 @app.route('/api/queue', methods=['GET'])
+@require_api_auth
 def api_queue():
     """
     Get current queue status.
@@ -723,6 +761,7 @@ def api_queue():
 
 
 @app.route('/api/cancel/<job_id>', methods=['POST', 'DELETE'])
+@require_api_auth
 def api_cancel(job_id):
     """
     Cancel a pending job.
@@ -751,6 +790,7 @@ def api_cancel(job_id):
 
 
 @app.route('/api/videos', methods=['GET'])
+@require_api_auth
 def api_videos():
     """
     Get list of all generated videos.

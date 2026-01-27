@@ -29,12 +29,16 @@
         /**
          * Create a new ApilageAI client
          * @param {Object} options - Configuration options
-         * @param {string} options.baseUrl - API base URL (default: https://gen.apilageai.lk)
+         * @param {string} options.baseUrl - API base URL (default: https://nova.apilageai.lk)
+         * @param {string} options.authCode - Authentication code (required for API access)
+         * @param {string} options.apiKey - API key (required for API access)
          * @param {number} options.pollInterval - Status polling interval in ms (default: 3000)
          * @param {number} options.timeout - Request timeout in ms (default: 30000)
          */
         constructor(options = {}) {
-            this.baseUrl = (options.baseUrl || 'https://gen.apilageai.lk').replace(/\/$/, '');
+            this.baseUrl = (options.baseUrl || 'https://nova.apilageai.lk').replace(/\/$/, '');
+            this.authCode = options.authCode || '';
+            this.apiKey = options.apiKey || '';
             this.pollInterval = options.pollInterval || 3000;
             this.timeout = options.timeout || 30000;
         }
@@ -52,6 +56,14 @@
                     'Accept': 'application/json'
                 }
             };
+
+            // Add authentication headers if provided
+            if (this.authCode) {
+                options.headers['X-Auth-Code'] = this.authCode;
+            }
+            if (this.apiKey) {
+                options.headers['X-API-Key'] = this.apiKey;
+            }
 
             if (data && (method === 'POST' || method === 'PUT')) {
                 options.body = JSON.stringify(data);
