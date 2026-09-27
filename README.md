@@ -1,3 +1,8 @@
+Source-Available Archive — Not Open Source
+This repository is publicly available for archival and educational purposes. Commercial use, redistribution, copying and rebranding, white-labeling, and publication of substantially copied versions are prohibited without written permission from ApilageAI PVT LTD.
+
+
+
 # VideoGen AI
 
 AI-powered video generation from natural-language prompts using **Google Gemini**, **Manim**, and text-to-speech narration.
